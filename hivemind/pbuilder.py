@@ -9,6 +9,7 @@ from sixpack import ARCH, DIST
 
 def build_trusted():
     db = "~/.trusted.gpg"
+    local("touch {0}".format(db))
     local("apt-key --keyring {0} adv --keyserver keyserver.ubuntu.com --recv-keys 5EDB1B62EC4926EA".format(db))
     local("apt-key --keyring {0} adv --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5".format(db))
     with settings(user='root'):
