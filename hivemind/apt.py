@@ -35,7 +35,8 @@ def upgrade(packages=[]):
             " ".join(packages))
 
     # Enable services
-    puppet.enable_agent()
+    if puppet.is_disabled() == outage:
+        puppet.enable_agent()
     nova.enable_host_services()
     nagios.cancel_host_maintence(outage)
 
