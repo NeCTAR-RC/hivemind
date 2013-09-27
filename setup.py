@@ -19,6 +19,7 @@ setup(name='hivemind',
       install_requires=[
           # -*- Extra requirements: -*-
           "fabric",
+          "prettytable",
           "requests",
           "lxml",
           "cssselect",
