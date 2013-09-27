@@ -2,6 +2,7 @@ import re
 from itertools import chain
 from fabric.api import shell_env, parallel, puts, env
 from operations import run
+import util
 import nagios
 import puppet
 
@@ -15,7 +16,8 @@ def update():
 
 @parallel(pool_size=10)
 def upgrade(packages=[]):
-    outage = "Package Upgrade."
+    outage = "Package Upgrade (%s@%s)." % (util.local_user(),
+                                           util.local_host())
     if isinstance(packages, dict):
         packages = packages[env.host_string]
     if not packages:
