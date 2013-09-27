@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "AAAATn///dk\u003d",
+        "filename": "hivemind/puppet.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000009
+      },
+      "writtenOn": "2013-09-27T04:58:13Z",
+      "side": 1,
+      "message": "How about\n\noutput \u003d run(\"/usr/bin/test -f %s\" % LOCK_FILE, warn_only\u003dTrue)\n\nto avoid the stderr redirect, then check the return_code value.",
+      "revId": "d13f24c71184b4b9367934b40cb4d9681e135e5b",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
