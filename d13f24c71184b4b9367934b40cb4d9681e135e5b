@@ -16,6 +16,24 @@
       "revId": "d13f24c71184b4b9367934b40cb4d9681e135e5b",
       "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn///c4\u003d",
+        "filename": "hivemind/puppet.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-09-27T07:11:43Z",
+      "side": 1,
+      "message": "using warn_only produces an output to the user, i would prefer that they don\u0027t get one.",
+      "parentUuid": "AAAATn///dk\u003d",
+      "revId": "d13f24c71184b4b9367934b40cb4d9681e135e5b",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
     }
   ]
 }
