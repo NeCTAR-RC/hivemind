@@ -3,6 +3,7 @@ from itertools import chain
 from fabric.api import shell_env, parallel, puts, env
 from operations import run
 import nagios
+import puppet
 
 package_version = re.compile(r'   ([^\s]+) \(([^\s]+) => ([^\s]+)\)')
 
@@ -20,9 +21,14 @@ def upgrade(packages=[]):
     if not packages:
         return
     nagios.ensure_host_maintence(outage)
+
+    puppet.disable_agent(outage)
+
     with shell_env(DEBIAN_FRONTEND='non-interactive'):
         run("apt-get install -o Dpkg::Options::='--force-confold' %s" %
             " ".join(packages))
+
+    puppet.enable_agent()
     nagios.cancel_host_maintence(outage)
 
 
