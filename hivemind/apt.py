@@ -5,6 +5,7 @@ from operations import run
 import util
 import nagios
 import puppet
+import nova
 
 package_version = re.compile(r'   ([^\s]+) \(([^\s]+) => ([^\s]+)\)')
 
@@ -24,13 +25,18 @@ def upgrade(packages=[]):
         return
     nagios.ensure_host_maintence(outage)
 
+    # Disable services
     puppet.disable_agent(outage)
+    nova.disable_host_services()
 
+    # Do upgrade
     with shell_env(DEBIAN_FRONTEND='non-interactive'):
         run("apt-get install -o Dpkg::Options::='--force-confold' %s" %
             " ".join(packages))
 
+    # Enable services
     puppet.enable_agent()
+    nova.enable_host_services()
     nagios.cancel_host_maintence(outage)
 
 
