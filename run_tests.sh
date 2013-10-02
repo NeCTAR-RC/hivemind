@@ -1,4 +1,9 @@
-#!/bin/bash
+#!/bin/bash -e
+
+virtualenv .
+
+source bin/activate
+pip install -r requirements.txt
 
 RETURN=0
 
@@ -10,5 +15,7 @@ do
         RETURN=1
     fi
 done
+
+nosetests -v
 
 exit $RETURN
