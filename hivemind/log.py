@@ -5,6 +5,7 @@ import logging.handlers
 from collections import deque
 
 from fabric.api import env, puts
+from fabric.state import output
 
 console = logging.StreamHandler()
 console.setLevel(logging.ERROR)
@@ -28,10 +29,11 @@ ansi_escape = re.compile(r'\x1b[^m]*m')
 
 
 class StreamLogger(object):
-    def __init__(self):
+    def __init__(self, stream="stdout"):
         self.logger = logging.getLogger(env.host_string)
         self.linebuf = ''
         self.last_line = ""
+        self.stream = stream
         self.line_count = 0
         self.recent_lines = deque(maxlen=10)
 
@@ -44,6 +46,8 @@ class StreamLogger(object):
             self.recent_lines.append(line)
             line = line.rstrip()
             line = ansi_escape.sub('', line)
+            if getattr(output, self.stream, None):
+                puts("[%s] %s" % (env.host_string, line))
             if line == self.last_line:
                 self.line_count += 1
                 continue
@@ -64,7 +68,7 @@ class StreamLogger(object):
 
 def stdio():
     stdout = StreamLogger()
-    stderr = StreamLogger()
+    stderr = StreamLogger("stderr")
     stderr.recent_lines = stdout.recent_lines
     return stdout, stderr
 
