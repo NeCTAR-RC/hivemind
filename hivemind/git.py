@@ -1,4 +1,4 @@
-from fabric.api import puts, local, abort, hide
+from fabric.api import puts, local, abort, hide, settings
 from fabric.colors import green
 
 
@@ -31,6 +31,11 @@ def head():
 def current_branch():
     with hide("everything"):
         return local("git rev-parse --symbolic-full-name --abbrev-ref HEAD", capture=True)
+
+
+def branch_exists(branch_name):
+    with settings(warn_only=True):
+        return local("git show-ref --verify --quiet refs/heads/{0}".format(branch_name))
 
 
 class temporary_merge():
