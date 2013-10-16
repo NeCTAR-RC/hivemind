@@ -4,7 +4,7 @@ Build a package
 
 from os.path import expanduser
 from fabric.api import task, local, hosts, get, settings, shell_env
-from sixpack import ARCH, DIST
+from sixpack import ARCH, DIST, STABLE_RELEASE
 
 
 def build_trusted():
@@ -17,37 +17,53 @@ def build_trusted():
     local("gpg --no-default-keyring --keyring /tmp/nectar-custom.gpg --export | gpg --no-default-keyring --keyring {0} --import".format(db))
 
 
+mirrors = {
+    'grizzly': ["deb http://mirrors.melbourne.nectar.org.au/ubuntu-cloud/ubuntu precise-updates/grizzly main",
+                "deb http://download.rc.nectar.org.au/nectar-ubuntu precise main",
+                "deb http://download.rc.nectar.org.au/nectar-ubuntu precise-grizzly main",
+                "deb http://download.rc.nectar.org.au/nectar-ubuntu precise-grizzly-testing main",
+                "deb http://download.rc.nectar.org.au/nectar-ubuntu precise-testing main"],
+    'havana': ["deb http://mirrors.melbourne.nectar.org.au/ubuntu-cloud/ubuntu precise-updates/havana main",
+                "deb http://download.rc.nectar.org.au/nectar-ubuntu precise main",
+                "deb http://download.rc.nectar.org.au/nectar-ubuntu precise-havana main",
+                "deb http://download.rc.nectar.org.au/nectar-ubuntu precise-havana-testing main",
+                "deb http://download.rc.nectar.org.au/nectar-ubuntu precise-testing main"],
+}
+
+
+def pbuilder_env(os_release):
+    dist_release = '{0}-{1}'.format(DIST, os_release)
+    return shell_env(ARCH=ARCH, DIST=dist_release)
+
+
 @task
 @hosts("mirrors.melbourne.nectar.org.au")
-def create():
+def create(os_release=STABLE_RELEASE):
     """Create an environment for building packages."""
     build_trusted()
     keyring = expanduser("~/.trusted.gpg")
     mirror = "http://mirrors.melbourne.nectar.org.au/ubuntu-archive/ubuntu/"
     components = "main universe"
-    mirrors = ["deb http://mirrors.melbourne.nectar.org.au/ubuntu-cloud/ubuntu precise-updates/grizzly main",
-               "deb http://download.rc.nectar.org.au/nectar-ubuntu precise main",
-               "deb http://download.rc.nectar.org.au/nectar-ubuntu precise-grizzly main",
-               "deb http://download.rc.nectar.org.au/nectar-ubuntu precise-grizzly-testing main",
-               "deb http://download.rc.nectar.org.au/nectar-ubuntu precise-testing main"]
+
+    other_mirrors = mirrors[os_release]
 
     with shell_env(ARCH=ARCH, DIST=DIST):
         local('git-pbuilder create --mirror {mirror} --components "{components}" --othermirror "{mirrors}" --keyring {keyring} --debootstrapopts --keyring={keyring}'.format(
             mirror=mirror,
             components=components,
-            mirrors="|".join(mirrors),
+            mirrors="|".join(other_mirrors),
             keyring=keyring))
 
 
 @task
-def shell():
+def shell(os_release=STABLE_RELEASE):
     """Open a shell in the packaging environment."""
-    with shell_env(ARCH=ARCH, DIST=DIST):
+    with pbuilder_env(os_release):
         local("git-pbuilder login")
 
 
 @task
-def update():
+def update(os_release=STABLE_RELEASE):
     """Update the packaging environment."""
-    with shell_env(ARCH=ARCH, DIST=DIST):
+    with pbuilder_env(os_release):
         local("git-pbuilder update")
