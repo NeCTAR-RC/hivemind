@@ -20,7 +20,7 @@ def assert_clean_repository():
 
 def describe():
     with hide("everything"):
-        return local("git describe", capture=True)
+        return local("git describe --tags", capture=True)
 
 
 def head():
