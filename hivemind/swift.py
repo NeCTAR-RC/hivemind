@@ -1,10 +1,8 @@
-from decorators import only_for
 from operations import run
-from util import roles
-from fabric.api import parallel, puts, env
-from fabric.colors import green, red, blue
+from fabric.api import parallel, puts, env, shell_env
+from fabric.colors import red, blue
 from fabric.operations import reboot
-from hivemind import apt, util, puppet
+from hivemind import util, puppet
 
 
 @parallel(pool_size=5)
