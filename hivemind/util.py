@@ -1,6 +1,5 @@
 import os
 import socket
-
 from fabric.api import env
 
 

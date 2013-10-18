@@ -12,7 +12,8 @@ package_version = re.compile(r'   ([^\s]+) \(([^\s]+) => ([^\s]+)\)')
 
 @parallel(pool_size=20)
 def update():
-    run("apt-get update")
+    #update to get latest list
+    return run("apt-get update")
 
 
 @parallel(pool_size=10)
@@ -39,6 +40,23 @@ def upgrade(packages=[]):
         puppet.enable_agent()
     nova.enable_host_services()
     nagios.cancel_host_maintence(outage)
+
+
+def run_upgrade(packages, force_default_config=True):
+    if force_default_config:
+        options = '--force-confold'
+    else:
+        options = '--force-confdef'
+
+    with shell_env(DEBIAN_FRONTEND='non-interactive'):
+        run("apt-get install -o Dpkg::Options::='%s' %s" %
+            (options, " ".join(packages)))
+
+
+@parallel(pool_size=20)
+def update_packages():
+    result = run("apt-get upgrade --assume-no -V", warn_only=True, quiet=True)
+    return result
 
 
 @parallel(pool_size=20)
@@ -69,7 +87,7 @@ def print_changes(host_packages):
     packages = list(set(chain(*[packages.keys()
                                 for packages in host_packages.values()])))
     packages.sort()
-    puts("\nThe following packages will be upgraded:")
+    puts("\nThe following packages will be upgraded")
     for package in packages:
         package_versions = [p.get(package) for p in host_packages.values()]
         package_versions = [pv for pv in package_versions if pv is not None]
