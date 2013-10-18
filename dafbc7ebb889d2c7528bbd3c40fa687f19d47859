@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "AAAATn//+3E\u003d",
+        "filename": "hivemind/puppet.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2013-10-18T03:52:09Z",
+      "side": 1,
+      "message": "Is there a need for these methods when the methods above (disable_agent and enable_agent) do it?\n\nIt\u0027s better to disable the agent as opposed to stopping it as if you apt upgrade and there is a puppet upgrade apt will start puppet\n\nIf it is needed to start/stop then I think the method names should be changed to start_service and stop_service to avoid confusion",
+      "revId": "dafbc7ebb889d2c7528bbd3c40fa687f19d47859",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+28\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2013-10-18T03:52:09Z",
+      "side": 1,
+      "message": "Maybe by default should be all",
+      "revId": "dafbc7ebb889d2c7528bbd3c40fa687f19d47859",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+20\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2013-10-18T03:52:09Z",
+      "side": 1,
+      "message": "I don\u0027t think you need a special case for the proxy server. If you run swift-init all stop it will stop swift-proxy",
+      "revId": "dafbc7ebb889d2c7528bbd3c40fa687f19d47859",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+24\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2013-10-18T03:52:09Z",
+      "side": 1,
+      "message": "This is only stopping the background processes so it would be good to make that clear.\n\nEg. stop_services(action\u003d\u0027background\u0027)",
+      "revId": "dafbc7ebb889d2c7528bbd3c40fa687f19d47859",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+2w\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2013-10-18T03:52:09Z",
+      "side": 1,
+      "message": "Again, don\u0027t think you need a special case for proxy server",
+      "revId": "dafbc7ebb889d2c7528bbd3c40fa687f19d47859",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+2s\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2013-10-18T03:52:09Z",
+      "side": 1,
+      "message": "This could go in the apt class, and the existing upgrade method in apt could go in the nova class since it does more than just apt upgrade",
+      "revId": "dafbc7ebb889d2c7528bbd3c40fa687f19d47859",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
