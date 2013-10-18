@@ -87,6 +87,23 @@
     },
     {
       "key": {
+        "uuid": "AAAATn//+2c\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-18T04:00:17Z",
+      "side": 1,
+      "message": "This function seems to either return a string or a list.",
+      "revId": "dafbc7ebb889d2c7528bbd3c40fa687f19d47859",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "AAAATn//+2s\u003d",
         "filename": "hivemind/swift.py",
         "patchSetId": 3
@@ -98,6 +115,40 @@
       "writtenOn": "2013-10-18T03:52:09Z",
       "side": 1,
       "message": "This could go in the apt class, and the existing upgrade method in apt could go in the nova class since it does more than just apt upgrade",
+      "revId": "dafbc7ebb889d2c7528bbd3c40fa687f19d47859",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+2Y\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-18T04:00:17Z",
+      "side": 1,
+      "message": "this abstraction seems a bit too thin, perhaps it would be more clear if the fabric command was used on line 99",
+      "revId": "dafbc7ebb889d2c7528bbd3c40fa687f19d47859",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+2o\u003d",
+        "filename": "hivemind/util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-18T04:00:17Z",
+      "side": 1,
+      "message": "I don\u0027t know  that this abstraction is really saving much.\n\nroles()\n vs.\nenv.roles\n\nthere is only 2 characters difference.",
       "revId": "dafbc7ebb889d2c7528bbd3c40fa687f19d47859",
       "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
       "unresolved": false
