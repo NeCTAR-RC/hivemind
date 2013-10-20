@@ -35,7 +35,8 @@ def current_branch():
 
 def branch_exists(branch_name):
     with settings(warn_only=True):
-        return local("git show-ref --verify --quiet refs/heads/{0}".format(branch_name))
+        result = local("git show-ref --verify --quiet refs/heads/{0}".format(branch_name))
+        return result.succeeded
 
 
 class temporary_merge():
