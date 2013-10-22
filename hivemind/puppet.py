@@ -12,11 +12,11 @@ def enable_agent():
     run("puppet agent --enable")
 
 
-def disable_service():
+def stop_service():
     run("service puppet stop")
 
 
-def enable_service():
+def start_service():
     run("service puppet start")
 
 

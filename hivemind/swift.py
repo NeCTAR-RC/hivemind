@@ -2,7 +2,7 @@ from operations import run
 from fabric.api import parallel, puts, env, shell_env
 from fabric.colors import red, blue
 from fabric.operations import reboot
-from hivemind import util, puppet
+from hivemind import util, puppet, apt
 
 
 @parallel(pool_size=5)
@@ -25,27 +25,21 @@ def list_service():
 
 @parallel(pool_size=5)
 def stop_services(action=None):
-
-    services = identify_role_service()
-    if 'swift-proxy' in services:
-        run("swift-init proxy-server stop",
+    if action is None:
+        run("swift-init all stop",
             warn_only=True, quiet=True
             )
     else:
-        if action is 'all':
-            run("swift-init all stop",
-                warn_only=True, quiet=True
-                )
-        else:
-            run("swift-init account-replicator stop")
-            run("swift-init account-reaper stop")
-            run("swift-init account-auditor stop")
-            run("swift-init object-replicator stop")
-            run("swift-init object-auditor stop")
-            run("swift-init object-updater stop")
-            run("swift-init container-replicator stop")
-            run("swift-init container-updater stop")
-            run("swift-init container-auditor stop")
+        #stop non-server process on storage node
+        run("swift-init account-replicator stop")
+        run("swift-init account-reaper stop")
+        run("swift-init account-auditor stop")
+        run("swift-init object-replicator stop")
+        run("swift-init object-auditor stop")
+        run("swift-init object-updater stop")
+        run("swift-init container-replicator stop")
+        run("swift-init container-updater stop")
+        run("swift-init container-auditor stop")
 
     return
 
@@ -53,19 +47,13 @@ def stop_services(action=None):
 @parallel(pool_size=5)
 def start_services():
     services = identify_role_service()
-    if 'swift-proxy' in services:
-        cmd_output = run("swift-init proxy-server start",
-                         warn_only=True, quiet=True
-                         )
-    else:
-        cmd_output = run("swift-init all start",
-                         warn_only=True, quiet=True)
-
+    cmd_output = run("swift-init all start",
+                     warn_only=True, quiet=True
+                     )
     return cmd_output
 
 
 def print_results(services):
-    print services
     p = lambda x: "\n ".join(x)
     for k, v in services.iteritems():
         if len(v[0])is 0:
@@ -87,45 +75,44 @@ def upgrade(packages=[], nagios=None):
         return
     if nagios is not None:
         nagios.ensure_host_maintence(outage)
-    # stop the puppet service, run puppet using agent
-
-    puppet.disable_service()
+    #stop the puppet service, in order
+    #to run puppet manually using agent
+    puppet.stop_service()
     backup_ring()
-    stop_services()
-    puppet.run_agent()
-    call_upgrade(packages)
-    start_services()
-    puppet.enable_service()
-    reboot_swift()
 
     if 'swift-node' in identify_role_service():
-        start_services()
+        stop_services(action='background')
+    else:
+        stop_services()
     services[env.host_string] = list_service()
     print_results(services)
+    puppet.run_agent()
+    apt.get_upgrade_shell(packages)
+    puppet.start_service()
+    reboot(wait=120)
+
+    #upstart not able to start nodes services
+    #since the conf files are in folders
+    start_services()
+    services[env.host_string] = list_service()
+    print_results(services)
+
     if nagios is not None:
         nagios.ensure_host_maintence(outage)
 
 
 def identify_role_service():
-    if len(util.roles()) is 0:
-        service = [k for k, v in util.roledefs().items()
+    #function to get what roledefs a host
+    #belongs to. e.g sp01 -> swift-proxy
+
+    if len(env.roles) is 0:
+        service = [k for k, v in env.roledefs.items()
                    if util.current_host() in v
                    ]
     else:
-        service = "".join(util.roles())
+        service = "".join(env.roles)
 
     return service
-
-
-def call_upgrade(packages):
-    with shell_env(DEBIAN_FRONTEND='non-interactive'):
-            run("apt-get install -o Dpkg::Options::='--force-confold' %s" %
-                " ".join(packages)
-                )
-
-
-def reboot_swift():
-    reboot(wait=120)
 
 
 def backup_ring():

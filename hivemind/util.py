@@ -13,11 +13,3 @@ def local_host():
 
 def current_host():
     return env.host_string.split(".")[0]
-
-
-def roles():
-    return env.roles
-
-
-def roledefs():
-    return env.roledefs
