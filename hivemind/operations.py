@@ -1,7 +1,6 @@
 from fabric.api import run as fabric_run, puts, env
 from fabric.colors import green, red
 import log
-import exceptions
 
 
 def run(command, shell=True, pty=True, combine_stderr=None, quiet=False,

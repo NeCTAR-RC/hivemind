@@ -1,5 +1,5 @@
 from operations import run
-from fabric.api import parallel, puts, env, shell_env
+from fabric.api import parallel, puts, env
 from fabric.colors import red, blue
 from fabric.operations import reboot
 from hivemind import util, puppet, apt
@@ -46,7 +46,6 @@ def stop_services(action=None):
 
 @parallel(pool_size=5)
 def start_services():
-    services = identify_role_service()
     cmd_output = run("swift-init all start",
                      warn_only=True, quiet=True
                      )
