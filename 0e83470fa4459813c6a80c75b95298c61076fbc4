@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "AAAATn//+yY\u003d",
+        "filename": "hivemind/apt.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T06:17:31Z",
+      "side": 1,
+      "message": "if force_default_config is True then shouldn\u0027t it be adding the argument \u0027--force-confdef\u0027 not \u0027--force-confold\u0027",
+      "revId": "0e83470fa4459813c6a80c75b95298c61076fbc4",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+yg\u003d",
+        "filename": "hivemind/apt.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T06:17:31Z",
+      "side": 1,
+      "message": "this should now be using your newly defined function above\n\ne.g.\nresult \u003d update_packages()",
+      "revId": "0e83470fa4459813c6a80c75b95298c61076fbc4",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+yk\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T06:17:31Z",
+      "side": 1,
+      "message": "this decorator isn\u0027t needed",
+      "revId": "0e83470fa4459813c6a80c75b95298c61076fbc4",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
