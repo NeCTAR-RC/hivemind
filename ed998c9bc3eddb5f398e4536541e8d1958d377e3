@@ -2,6 +2,176 @@
   "comments": [
     {
       "key": {
+        "uuid": "AAAATn//+z8\u003d",
+        "filename": "hivemind/apt.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": "this should be one line\n\nreturn run(\"apt-get update\")\n\nand the comment should be a doc string",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+z4\u003d",
+        "filename": "hivemind/apt.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": "what is this getting?  the upgrade shell?  from what i cant tell this function doesn\u0027t return a value so it\u0027s not really getting anything.\n\ntry to describe what the function is doing, e.g. upgrade",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+00\u003d",
+        "filename": "hivemind/apt.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": "this is more of a style comment, normally you wolud try and avoid having the ) appear on the  line following the function arguments",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+zw\u003d",
+        "filename": "hivemind/apt.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": "option should probably have a more descriptive name link force_default_config and there should be a doc string to describe what this flag does.",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+zc\u003d",
+        "filename": "hivemind/apt.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": "this whole function should be merged into the upgrade function above.\n\nthe function argument list should be something like.\ndef upgrade(packages, disable_puppet\u003dTrue, disable_nagios\u003dTrue, disable_nova\u003dFalse)",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+zg\u003d",
+        "filename": "hivemind/apt.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": "this should be using the newly defined update_packages function above.",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+zo\u003d",
+        "filename": "hivemind/operations.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": ") should be on the previous line",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+zk\u003d",
+        "filename": "hivemind/operations.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": ") should be on the previous line",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+zQ\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": "this decorator isn\u0027t require because you aren\u0027t calling list_services with the execute function.",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+zM\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": "this decorator isn\u0027t require because you aren\u0027t calling list_services with the execute function.",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "AAAATn//+z0\u003d",
         "filename": "hivemind/swift.py",
         "patchSetId": 4
@@ -13,6 +183,91 @@
       "writtenOn": "2013-10-25T04:06:05Z",
       "side": 1,
       "message": "Instead of having None here, use the string \"all\" then it is clear that by default it stops all services.\n\nMaybe the method could be:\n\ndef stop_services(services\u003d\u0027all\u0027):\n   if services \u003d\u003d \u0027all\u0027:\n         restart all services\n   elif services \u003d\u003d \u0027background\u0027:\n         restart background services\n   else:\n         return error \"no such services %s\" % services",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+zU\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": ") should be on the previous line",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+zI\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": "this decorator isn\u0027t require because you aren\u0027t calling list_services with the execute function.",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+zY\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": "this function still returns a list or a string? this is really bad",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+zE\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": "] this should be on the previous line",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//+zA\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-25T04:25:05Z",
+      "side": 1,
+      "message": "why is this not service \u003d env.roles",
       "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
       "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
       "unresolved": false
