@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "AAAATn//+z0\u003d",
+        "filename": "hivemind/swift.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2013-10-25T04:06:05Z",
+      "side": 1,
+      "message": "Instead of having None here, use the string \"all\" then it is clear that by default it stops all services.\n\nMaybe the method could be:\n\ndef stop_services(services\u003d\u0027all\u0027):\n   if services \u003d\u003d \u0027all\u0027:\n         restart all services\n   elif services \u003d\u003d \u0027background\u0027:\n         restart background services\n   else:\n         return error \"no such services %s\" % services",
+      "revId": "ed998c9bc3eddb5f398e4536541e8d1958d377e3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
