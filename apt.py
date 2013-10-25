@@ -42,8 +42,8 @@ def upgrade(packages=[]):
     nagios.cancel_host_maintence(outage)
 
 
-def run_upgrade(packages, force_default_config=True):
-    if force_default_config:
+def run_upgrade(packages, force_old_config=True):
+    if force_old_config:
         options = '--force-confold'
     else:
         options = '--force-confdef'
@@ -61,7 +61,7 @@ def update_packages():
 
 @parallel(pool_size=20)
 def verify():
-    result = run("apt-get upgrade --assume-no -V", warn_only=True, quiet=True)
+    result = update_packages()
     versions = {}
     read_versions = False
     for line in result.split("\n"):

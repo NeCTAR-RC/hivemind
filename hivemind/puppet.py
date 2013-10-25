@@ -12,6 +12,19 @@ def enable_agent():
     run("puppet agent --enable")
 
 
+def stop_service():
+    run("service puppet stop")
+
+
+def start_service():
+    run("service puppet start")
+
+
+def run_agent():
+    run("puppet agent -t")
+
+
+# TODO does not with puppet 2
 def is_disabled():
     """Check if the puppet agent is disabled.  If it is then return the
     reason.
