@@ -12,6 +12,24 @@ def enable_agent():
     run("puppet agent --enable")
 
 
+class disabled():
+    """Disable a puppet agent for the duration of the with context:
+
+    >>> from hivemind import puppet
+    >>> with puppet.disabled('Software Upgrade'):
+    ...    # ... Perform upgrade ...
+    ...    pass
+    """
+    def __init__(self, reason):
+        self.reason = reason
+
+    def __enter__(self):
+        disable_agent(self.reason)
+
+    def __exit__(self, type, value, traceback):
+        enable_agent()
+
+
 def stop_service():
     run("service puppet stop")
 
