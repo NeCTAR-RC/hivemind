@@ -31,7 +31,7 @@ def upgrade(packages=[]):
     nova.disable_host_services()
 
     # Do upgrade
-    with shell_env(DEBIAN_FRONTEND='non-interactive'):
+    with shell_env(DEBIAN_FRONTEND='noninteractive'):
         run("apt-get install -o Dpkg::Options::='--force-confold' %s" %
             " ".join(packages))
 
