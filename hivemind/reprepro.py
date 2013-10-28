@@ -27,6 +27,7 @@ def list_distributions():
     with cd("/data/web/nectar-ubuntu/dists"):
         run("ls")
 
+
 @task
 @hosts("mirrors.melbourne.nectar.org.au")
 def cp_package(package, source, dest):
@@ -34,3 +35,10 @@ def cp_package(package, source, dest):
     with cd("/data/web/nectar-ubuntu"), hide("stdout"):
         packages = run("reprepro listfilter %s '$Source (==%s)' | awk '{print $2}' | sort | uniq" % (source, package))
         run("reprepro copy %s %s %s" % (dest, source, " ".join(packages.splitlines())))
+
+
+@task
+@hosts("mirrors.melbourne.nectar.org.au")
+def rm_packages(distribution, source_package):
+    """Remove distribution packages that belong to the given source package."""
+    reprepro("removesrc {0} {1}".format(distribution, source_package))
