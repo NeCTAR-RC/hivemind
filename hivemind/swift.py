@@ -1,5 +1,9 @@
 from operations import run
+<<<<<<< HEAD
 from fabric.api import parallel, puts, env
+=======
+from fabric.api import parallel, puts, env, task
+>>>>>>> ac0ebe5... added swift upgrade functions
 from fabric.colors import red, blue
 from fabric.operations import reboot
 from hivemind import util, puppet, apt
@@ -22,6 +26,11 @@ def list_service():
     return running_services, disabled_services
 
 
+<<<<<<< HEAD
+=======
+@task
+@parallel(pool_size=6)
+>>>>>>> ac0ebe5... added swift upgrade functions
 def stop_services(services='all'):
     if services is 'all':
         run("swift-init all stop",
@@ -41,7 +50,12 @@ def stop_services(services='all'):
         puts("No such services %s" % services)
 
 
+<<<<<<< HEAD
 @parallel(pool_size=5)
+=======
+@task
+@parallel(pool_size=6)
+>>>>>>> ac0ebe5... added swift upgrade functions
 def start_services():
     cmd_output = run("swift-init all start",
                      warn_only=True, quiet=True)
@@ -58,27 +72,42 @@ def print_results(services):
         puts("[%s]\n %s\n %s" % (k,  red("=> disabled"), p(set(v[1]))))
 
 
+<<<<<<< HEAD
 @parallel(pool_size=4)
 def upgrade(packages=[], nagios=None):
+=======
+@task
+@parallel(pool_size=8)
+def pre_upgrade(nagios=None):
+>>>>>>> ac0ebe5... added swift upgrade functions
     services = {}
     outage = "Package Upgrade (%s@%s)." % (util.local_user(),
                                            util.local_host())
 
+<<<<<<< HEAD
     if isinstance(packages, dict):
         packages = packages[env.host_string]
     if not packages:
         return
+=======
+>>>>>>> ac0ebe5... added swift upgrade functions
     if nagios is not None:
         nagios.ensure_host_maintence(outage)
     #stop the puppet service, in order
     #to run puppet manually using agent
     puppet.stop_service()
+<<<<<<< HEAD
     backup_ring()
 
+=======
+    puppet.run_agent()
+    backup_ring()
+>>>>>>> ac0ebe5... added swift upgrade functions
     if 'swift-node' in identify_role_service():
         stop_services(services='background')
     else:
         stop_services(services='all')
+<<<<<<< HEAD
     services[env.host_string] = list_service()
     print_results(services)
     puppet.run_agent()
@@ -88,6 +117,28 @@ def upgrade(packages=[], nagios=None):
 
     #upstart not able to start nodes services
     #since the conf files are in folders
+=======
+
+    services[env.host_string] = list_service()
+    print_results(services)
+
+
+def upgrade(packages=[]):
+    if isinstance(packages, dict):
+        packages = packages[env.host_string]
+    if not packages:
+        return
+    apt.run_upgrade(packages)
+    reboot(wait=300)
+
+
+@task
+@parallel(pool_size=8)
+def post_upgrade(nagios=None):
+    outage = "Package Upgrade (%s@%s)." % (util.local_user(),
+                                           util.local_host())
+    services = {}
+>>>>>>> ac0ebe5... added swift upgrade functions
     start_services()
     services[env.host_string] = list_service()
     print_results(services)
