@@ -1,5 +1,5 @@
 from operations import run
-from fabric.api import parallel, puts, env
+from fabric.api import parallel, puts, env, task
 from fabric.colors import red, blue
 from fabric.operations import reboot
 from hivemind import util, puppet, apt
@@ -22,6 +22,8 @@ def list_service():
     return running_services, disabled_services
 
 
+@task
+@parallel(pool_size=6)
 def stop_services(services='all'):
     if services is 'all':
         run("swift-init all stop",
@@ -41,7 +43,8 @@ def stop_services(services='all'):
         puts("No such services %s" % services)
 
 
-@parallel(pool_size=5)
+@task
+@parallel(pool_size=6)
 def start_services():
     cmd_output = run("swift-init all start",
                      warn_only=True, quiet=True)
@@ -58,36 +61,44 @@ def print_results(services):
         puts("[%s]\n %s\n %s" % (k,  red("=> disabled"), p(set(v[1]))))
 
 
-@parallel(pool_size=4)
-def upgrade(packages=[], nagios=None):
+@task
+@parallel(pool_size=8)
+def pre_upgrade(nagios=None):
     services = {}
     outage = "Package Upgrade (%s@%s)." % (util.local_user(),
                                            util.local_host())
 
-    if isinstance(packages, dict):
-        packages = packages[env.host_string]
-    if not packages:
-        return
     if nagios is not None:
         nagios.ensure_host_maintence(outage)
     #stop the puppet service, in order
     #to run puppet manually using agent
     puppet.stop_service()
+    puppet.run_agent()
     backup_ring()
-
     if 'swift-node' in identify_role_service():
         stop_services(services='background')
     else:
         stop_services(services='all')
+
     services[env.host_string] = list_service()
     print_results(services)
-    puppet.run_agent()
-    apt.run_upgrade(packages)
-    puppet.start_service()
-    reboot(wait=120)
 
-    #upstart not able to start nodes services
-    #since the conf files are in folders
+
+def upgrade(packages=[]):
+    if isinstance(packages, dict):
+        packages = packages[env.host_string]
+    if not packages:
+        return
+    apt.run_upgrade(packages)
+    reboot(wait=300)
+
+
+@task
+@parallel(pool_size=8)
+def post_upgrade(nagios=None):
+    outage = "Package Upgrade (%s@%s)." % (util.local_user(),
+                                           util.local_host())
+    services = {}
     start_services()
     services[env.host_string] = list_service()
     print_results(services)
