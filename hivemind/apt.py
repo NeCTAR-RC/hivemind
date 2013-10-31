@@ -1,4 +1,4 @@
-import re
+from re import match, compile as re_compile
 from itertools import chain
 from fabric.api import shell_env, parallel, puts, env
 from operations import run
@@ -6,8 +6,6 @@ import util
 import nagios
 import puppet
 import nova
-
-package_version = re.compile(r'   ([^\s]+) \(([^\s]+) => ([^\s]+)\)')
 
 
 @parallel(pool_size=20)
@@ -61,18 +59,33 @@ def update_packages():
 
 @parallel(pool_size=20)
 def verify():
-    result = run("apt-get upgrade --assume-no -V", warn_only=True, quiet=True)
+    result = run("apt-get dist-upgrade --assume-no -V", warn_only=True,
+                 quiet=True)
+    package_upgrade = re_compile(r'   ([^\s]+) \(([^\s]+) => ([^\s]+)\)')
+    package_install = re_compile(r'   ([^\s]+) \(([^\s]+)\)')
     versions = {}
-    read_versions = False
+    install_versions = False
+    upgrade_versions = False
     for line in result.split("\n"):
         if not line.startswith(" "):
-            read_versions = False
-        if read_versions:
-            match = package_version.match(line)
-            match = match.groups()
-            versions[match[0]] = (match[1], match[2])
+            upgrade_versions = False
+            install_versions = False
+        if upgrade_versions:
+            package = package_upgrade.match(line)
+            package = package.groups()
+            versions[match[0]] = (package[1], package[2])
+            continue
+        if install_versions:
+            package = package_install.match(line)
+            package = match.groups()
+            versions[package[0]] = ('not currently installed', package[1])
+            continue
         if line.startswith("The following packages will be upgraded:"):
-            read_versions = True
+            upgrade_versions = True
+            continue
+        if line.startswith("The following NEW packages will be installed:"):
+            install_versions = True
+            continue
     return versions
 
 
