@@ -85,12 +85,14 @@ def pre_upgrade(nagios=None):
 
 
 def upgrade(packages=[]):
+    wait=600
     if isinstance(packages, dict):
         packages = packages[env.host_string]
     if not packages:
         return
     apt.run_upgrade(packages)
-    reboot(wait=300)
+    puts('Rebooting machine (going to wait %s seconds' % wait)
+    reboot(wait=wait)
 
 
 @task
