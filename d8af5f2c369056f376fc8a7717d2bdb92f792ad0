@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "AAAATn//+jk\u003d",
+        "filename": "hivemind/puppet.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-10-31T05:29:05Z",
+      "side": 1,
+      "message": "quiet should not be needed if the correct state values are set.\n\n\nfrom fabric import state\n\nstate.output[\u0027stdout\u0027] \u003d False\nstate.output[\u0027stderr\u0027] \u003d False\n\nthis will quiet everything",
+      "revId": "d8af5f2c369056f376fc8a7717d2bdb92f792ad0",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
