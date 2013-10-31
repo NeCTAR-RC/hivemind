@@ -69,7 +69,7 @@ def pre_upgrade(nagios=None):
                                            util.local_host())
 
     if nagios is not None:
-        nagios.ensure_host_maintence(outage)
+        nagios.ensure_host_maintenance(outage)
     #stop the puppet service, in order
     #to run puppet manually using agent
     puppet.stop_service()
@@ -104,7 +104,7 @@ def post_upgrade(nagios=None):
     print_results(services)
 
     if nagios is not None:
-        nagios.ensure_host_maintence(outage)
+        nagios.ensure_host_maintenance(outage)
 
 
 def identify_role_service():

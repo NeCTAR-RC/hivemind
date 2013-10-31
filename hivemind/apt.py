@@ -24,7 +24,7 @@ def upgrade(packages=[]):
         packages = packages[env.host_string]
     if not packages:
         return
-    nagios.ensure_host_maintence(outage)
+    nagios.ensure_host_maintenance(outage)
 
     # Disable services
     puppet.disable_agent(outage)
@@ -39,7 +39,7 @@ def upgrade(packages=[]):
     if puppet.is_disabled() == outage:
         puppet.enable_agent()
     nova.enable_host_services()
-    nagios.cancel_host_maintence(outage)
+    nagios.cancel_host_maintenance(outage)
 
 
 def run_upgrade(packages, force_default_config=True):

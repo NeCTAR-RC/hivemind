@@ -40,7 +40,7 @@ def host_maintenance(comment, start_time=None,
     assert SUCCESS in resp.text
 
 
-def cancel_service_maintence(downtime_id):
+def cancel_service_maintenance(downtime_id):
     resp = requests.post(env.nagios + "cmd.cgi",
                          auth=env.nagios_auth,
                          data={"cmd_typ": 79,
@@ -49,16 +49,16 @@ def cancel_service_maintence(downtime_id):
     assert SUCCESS in resp.text
 
 
-def cancel_host_maintence(reason):
-    for service in services_in_maintence():
+def cancel_host_maintenance(reason):
+    for service in services_in_maintenance():
         if not service["host"] == env.host_string:
             continue
         if not service["reason"] == reason:
             continue
-        cancel_service_maintence(service["id"])
+        cancel_service_maintenance(service["id"])
 
 
-def services_in_maintence():
+def services_in_maintenance():
     resp = requests.get(env.nagios + "extinfo.cgi?type=6",
                         auth=env.nagios_auth)
     h = lxml.etree.HTML(resp.text)
@@ -83,8 +83,8 @@ def services_in_maintence():
     return services
 
 
-def host_is_in_maintence(reason):
-    for service in services_in_maintence():
+def host_is_in_maintenance(reason):
+    for service in services_in_maintenance():
         if not service["host"] == env.host_string:
             continue
         if not service["reason"] == reason:
@@ -93,14 +93,14 @@ def host_is_in_maintence(reason):
     return False
 
 
-def ensure_host_maintence(comment, start_time=None,
+def ensure_host_maintenance(comment, start_time=None,
                           hours=2, minutes=0, fixed=False):
 
-    if not host_is_in_maintence(comment):
+    if not host_is_in_maintenance(comment):
         host_maintenance(comment, hours=1)
     attempts = 0
     while True:
-        if host_is_in_maintence(comment):
+        if host_is_in_maintenance(comment):
             break
         if attempts > 5:
             raise Exception("Can't trigger maintenance in Nagios")
