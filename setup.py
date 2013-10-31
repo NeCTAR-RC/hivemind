@@ -24,6 +24,11 @@ setup(name='hivemind',
           "lxml",
           "cssselect",
       ],
+      test_requires=[
+          # -*- Extra requirements: -*-
+          'mox',
+          'mock',
+      ],
       entry_points="""
       # -*- Entry points: -*-
       """,
