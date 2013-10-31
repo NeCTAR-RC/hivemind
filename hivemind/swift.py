@@ -73,7 +73,6 @@ def pre_upgrade(nagios=None):
     #stop the puppet service, in order
     #to run puppet manually using agent
     puppet.stop_service()
-    puppet.run_agent()
     backup_ring()
     if 'swift-node' in identify_role_service():
         stop_services(services='background')
@@ -85,12 +84,15 @@ def pre_upgrade(nagios=None):
 
 
 def upgrade(packages=[]):
+    wait=600
     if isinstance(packages, dict):
         packages = packages[env.host_string]
     if not packages:
         return
+    puppet.run_agent()
     apt.run_upgrade(packages)
-    reboot(wait=300)
+    puts('Rebooting machine going to wait %s seconds' % wait)
+    reboot(wait=wait)
 
 
 @task

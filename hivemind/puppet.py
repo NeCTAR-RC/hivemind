@@ -39,7 +39,7 @@ def start_service():
 
 
 def run_agent():
-    run("puppet agent -t")
+    run("puppet agent -t", warn_only=True, quiet=True)
 
 
 # TODO does not with puppet 2
