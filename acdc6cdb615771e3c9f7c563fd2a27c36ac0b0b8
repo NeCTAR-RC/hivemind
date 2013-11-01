@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "AAAATn//+fY\u003d",
+        "filename": "hivemind/puppet.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2013-11-01T03:33:45Z",
+      "side": 1,
+      "message": "TODO(RS)?\n\nDon\u0027t see anything particularly x-rated in the comment",
+      "revId": "acdc6cdb615771e3c9f7c563fd2a27c36ac0b0b8",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
