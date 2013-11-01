@@ -43,11 +43,11 @@ class StreamLogger(object):
 
         """
         for line in buf.rstrip().splitlines():
+            if getattr(output, self.stream, None):
+                puts("[%s] %s" % (env.host_string, line))
             self.recent_lines.append(line)
             line = line.rstrip()
             line = ansi_escape.sub('', line)
-            if getattr(output, self.stream, None):
-                puts("[%s] %s" % (env.host_string, line))
             if line == self.last_line:
                 self.line_count += 1
                 continue
