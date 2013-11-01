@@ -39,7 +39,11 @@ def start_service():
 
 
 def run_agent():
-    run("puppet agent -t", warn_only=True, quiet=True)
+    # TODO (RS) puppet agent will return a 2 error value when anything
+    # is changed, if there is an error during a run 6 will be
+    # returned, a 1 will be returned if another agent is currently
+    # running, and 0 will be returned if nothing has changed
+    run("puppet agent -t", warn_only=True)
 
 
 # TODO does not with puppet 2
