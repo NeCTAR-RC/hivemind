@@ -39,7 +39,11 @@ def start_service():
 
 
 def run_agent():
-    run("puppet agent -t", warn_only=True, quiet=True)
+    # XXX (RS) puppet agent will return a non-zero error value when
+    # anything is changed, we should capture that and make sure that
+    # the run didn't fail because there was another puppet agent
+    # working.
+    run("puppet agent -t", warn_only=True)
 
 
 # TODO does not with puppet 2
