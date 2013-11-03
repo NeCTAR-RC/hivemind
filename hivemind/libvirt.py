@@ -10,7 +10,7 @@ def list():
     headers = None
     servers = []
     for line in output.split("\n"):
-        if headers is not None:
+        if headers is None:
             headers = [l.lower() for l in line.split()]
             continue
         if line.startswith("-----"):
@@ -20,8 +20,7 @@ def list():
             row["uuid"] = f_run("virsh domuuid %s" % row["id"])
         servers.append(row)
 
-    table = PrettyTable(["ID", "UUID", "Name", "State"],
-                        border=False)
+    table = PrettyTable(["ID", "UUID", "Name", "State"])
     for server in servers:
         table.add_row([server["id"],
                        server['uuid'],
