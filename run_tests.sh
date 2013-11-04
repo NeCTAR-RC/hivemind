@@ -94,6 +94,7 @@ then
     fi
 fi
 
+pip install -U pbr
 pip install -U -r requirements.txt
 pip install -U -e .
 
