@@ -22,6 +22,7 @@ setup(name='hivemind',
           "prettytable",
           "requests",
           "lxml",
+          'python-novaclient',
           "cssselect",
       ],
       test_requires=[
