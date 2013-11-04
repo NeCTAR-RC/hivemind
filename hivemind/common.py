@@ -357,6 +357,8 @@ def main_plus():
     if args.verbose > 0:
         output['everything'] = True
 
+    output['user'] = True
+
     if hasattr(args, 'hivemind_func'):
 
         kwargs = dict((arg, getattr(args, arg))
