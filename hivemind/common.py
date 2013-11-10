@@ -25,7 +25,8 @@ def main(filename=__file__):
         filename = filename.replace('.pyc', '.py')
 
     sys.argv = sys.argv[0:1] + ['-f', filename] + sys.argv[1:]
-    if len(sys.argv) == 3 or '-l' in sys.argv:
+    sys.argv += ['--list-format=nested']
+    if len(sys.argv) == 4 or '-l' in sys.argv:
         if env.roledefs:
             puts("Available roles:\n")
             for role, host_list in env.roledefs.items():
