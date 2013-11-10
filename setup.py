@@ -31,6 +31,9 @@ setup(name='hivemind',
       ],
       entry_points="""
       # -*- Entry points: -*-
+      [console_scripts]
+      hivemind = hivemind.common:main
+
       [hivemind.tasks]
       gerrit = hivemind.gerrit
       libvirt = hivemind.libvirt
