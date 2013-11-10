@@ -31,5 +31,13 @@ setup(name='hivemind',
       ],
       entry_points="""
       # -*- Entry points: -*-
+      [hivemind.tasks]
+      gerrit = hivemind.gerrit
+      libvirt = hivemind.libvirt
+      nagios = hivemind.nagios
+      pbuilder = hivemind.pbuilder
+      puppet = hivemind.puppet
+      reprepro = hivemind.reprepro
+      swift = hivemind.swift
       """,
       )
