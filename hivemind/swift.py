@@ -91,7 +91,7 @@ def upgrade(packages=[]):
         return
     puppet.run_agent()
     apt.run_upgrade(packages)
-    puts('Rebooting machine going to wait %s seconds' % wait)
+    puts('Rebooting machine (going to wait %s seconds)' % wait)
     reboot(wait=wait)
 
 
