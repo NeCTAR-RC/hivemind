@@ -33,7 +33,7 @@ def upgrade(packages=[]):
 
     # Do upgrade
     with shell_env(DEBIAN_FRONTEND='noninteractive'):
-        run("apt-get install -o Dpkg::Options::='--force-confold' %s" %
+        run("apt-get install -y -o Dpkg::Options::='--force-confold' %s" %
             " ".join(packages))
 
     # Enable services
@@ -49,8 +49,8 @@ def run_upgrade(packages, force_default_config=True):
     else:
         options = '--force-confdef'
 
-    with shell_env(DEBIAN_FRONTEND='non-interactive'):
-        run("apt-get install -o Dpkg::Options::='%s' %s" %
+    with shell_env(DEBIAN_FRONTEND='noninteractive'):
+        run("apt-get install -y -o Dpkg::Options::='%s' %s" %
             (options, " ".join(packages)))
 
 
