@@ -121,6 +121,22 @@ def env_options(parser):
         help="host to exclude."
     )
 
+    parser.add_argument(
+        '-I', '--instance-uuid',
+        default=None,
+        action='store',
+        metavar='INSTANCE',
+        help="UUID of instance to operate on."
+    )
+
+    parser.add_argument(
+        '-T', '--tenant-uuid',
+        default=None,
+        action='store',
+        metavar='TENANT',
+        help="UUID of tenant to operate on."
+    )
+
 
 def set_defaults():
     """Override some of the fabric defaults."""
@@ -132,6 +148,8 @@ def set_defaults():
 
     # Exit if there are no hosts specified.
     env['abort_on_prompts'] = True
+    env['instance_uuid'] = None
+    env['tenant_uuid'] = None
 
 
 def argname_to_option_flags(name):
@@ -299,6 +317,8 @@ def main_plus():
     fabric.state.env['hosts'] = args.hosts
     fabric.state.env['roles'] = args.roles
     fabric.state.env['exclude_hosts'] = args.exclude_hosts
+    fabric.state.env['instance_uuid'] = args.instance_uuid
+    fabric.state.env['tenant_uuid'] = args.tenant_uuid
 
     if args.verbose > 0:
         output['everything'] = True
