@@ -155,6 +155,8 @@ def register_subcommand(subparsers, name, function):
         kwargs = {}
         if not isinstance(default, Nothing):
             kwargs['default'] = default
+        else:
+            kwargs['required'] = True
 
         subcommand.add_argument('--' + arg, action='store', **kwargs)
 
