@@ -32,7 +32,7 @@ setup(name='hivemind',
       entry_points="""
       # -*- Entry points: -*-
       [console_scripts]
-      hivemind = hivemind.common:main
+      hivemind = hivemind.common:main_plus
 
       [hivemind.packages]
       default = hivemind

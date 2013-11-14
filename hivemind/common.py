@@ -1,16 +1,22 @@
 from collections import defaultdict
+from os import path
+import argparse
 import functools
+import inspect
 import pkg_resources
 import pkgutil
 import re
 import sys
+import sys
 
-from fabric.api import env, puts
+import fabric.main
+import fabric.state
+import fabric.utils
+from fabric.api import env, puts, output, execute
 from fabric.api import task as fabric_task
-from fabric import main as fabric_main
 
 
-def _load_fabfile(path, importer=None):
+def _load_fabfile(path=None, importer=None):
     all_tasks = defaultdict(dict)
     for entrypoint in pkg_resources.iter_entry_points(group='hivemind.packages'):
         plugin = entrypoint.load()
@@ -45,7 +51,7 @@ def _load_package_tasks(package, universe):
 def _load_module_tasks(module, default_universe):
     # It's defaultdicts all the way down...
     all_tasks = defaultdict(lambda: defaultdict(dict))
-    module_tasks = fabric_main.extract_tasks(vars(module).items())[0]
+    module_tasks = fabric.main.extract_tasks(vars(module).items())[0]
     for namespace, tasks in module_tasks.items():
         for name, task in tasks.items():
             try:
@@ -84,5 +90,210 @@ def main(filename=__file__):
                 puts("    %-15s %s" % (role, ",".join(host_list)))
         sys.argv = sys.argv + ["-l"]
 
-    fabric_main.load_fabfile = _load_fabfile
-    fabric_main.main()
+    fabric.main.load_fabfile = _load_fabfile
+    fabric.main.main()
+
+
+def env_options(parser):
+    """Generate environment dict argument parser."""
+
+    parser.add_argument(
+        '-R', '--roles',
+        default=[],
+        action='append',
+        metavar='ROLE',
+        help='a role to operate on.'
+    )
+
+    parser.add_argument(
+        '-H', '--hosts',
+        default=[],
+        action='append',
+        metavar='HOST',
+        help="host to operate on."
+    )
+
+    parser.add_argument(
+        '-x', '--exclude-hosts',
+        default=[],
+        action='append',
+        metavar='HOST',
+        help="host to exclude."
+    ),
+
+
+def set_defaults():
+    """Override some of the fabric defaults."""
+
+    # Set the default output level.
+    output['everything'] = False
+    output['running'] = True
+    output['warnings'] = True
+
+    # Exit if there are no hosts specified.
+    env['abort_on_prompts'] = True
+
+
+def register_subcommand(subparsers, name, function):
+    """Register a new subcommand.  Return the subcommand parser."""
+    subcommand = subparsers.add_parser(name)
+    args = func_args(function)
+
+    # Add the arguments and the function for extraction later.
+    subcommand.set_defaults(hivemind_func=function,
+                            hivemind_args=args.args)
+
+    class Nothing:
+        pass
+
+    # Pad out the default list with None
+    defaults = ((Nothing(),) * (len(args.args) - len(args.defaults or tuple()))
+                + (args.defaults or tuple()))
+
+    # Add all the inspected arguments as flags.
+    for arg, default in zip(args.args, defaults):
+        kwargs = {}
+        if not isinstance(default, Nothing):
+            kwargs['default'] = default
+
+        subcommand.add_argument('--' + arg, action='store', **kwargs)
+
+    return subcommand
+
+
+def load_rc(program_name):
+    """Load the users configuration file."""
+    progrc = "." + program_name + "rc"
+    filename = path.expanduser(path.join("~", progrc))
+    if path.exists(filename):
+        execfile(filename, globals())
+
+
+def load_subcommands(mapping, parser, prefix=""):
+    for command, value in sorted(mapping.items()):
+        name = '.'.join([prefix, command]) if prefix else command
+        if hasattr(value, 'items'):
+            load_subcommands(value, parser, name)
+        else:
+            register_subcommand(parser, name, value)
+
+
+def func_args(function):
+    "Dig through the decorator wrappers to find the real function arguments."
+    func = function
+    while func.func_closure or hasattr(func, 'wrapped'):
+        if hasattr(func, 'wrapped'):
+            func = func.wrapped
+            continue
+        func = func.func_closure[0].cell_contents
+    return inspect.getargspec(func)
+
+
+def _normal_list(docstrings=True):
+    # NOTE (RS) Sorry Kieran no indenting yet.
+    result = []
+    task_names = fabric.main._task_names(fabric.state.commands)
+    # Want separator between name, description to be straight col
+    max_len = reduce(lambda a, b: max(a, len(b)), task_names, 0)
+    sep = '  '
+    trail = '...'
+    max_width = fabric.main._pty_size()[1] - 1 - len(trail)
+    for name in task_names:
+        output = None
+        docstring = fabric.main._print_docstring(docstrings, name)
+        if docstring:
+            lines = filter(None, docstring.splitlines())
+            first_line = lines[0].strip()
+            # Truncate it if it's longer than N chars
+            size = max_width - (max_len + len(sep) + len(trail))
+            if len(first_line) > size:
+                first_line = first_line[:size] + trail
+            output = name.ljust(max_len) + sep + first_line
+        # Or nothing (so just the name)
+        else:
+            output = name
+        # argparse will insert an indent automatically, so the first
+        # line should exclude the indent.
+        if result:
+            result.append(fabric.utils.indent(output, 2))
+        else:
+            result.append(output)
+    return result
+
+
+class HelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
+    def _format_action_invocation(self, action):
+        if not action.option_strings:
+            metavar, = self._metavar_formatter(action, action.dest)(1)
+            return "\n".join(_normal_list())
+
+        else:
+            parts = []
+
+            # if the Optional doesn't take a value, format is:
+            #    -s, --long
+            if action.nargs == 0:
+                parts.extend(action.option_strings)
+
+            # if the Optional takes a value, format is:
+            #    -s ARGS, --long ARGS
+            else:
+                default = action.dest.upper()
+                args_string = self._format_args(action, default)
+                for option_string in action.option_strings:
+                    parts.append('%s %s' % (option_string, args_string))
+
+            return ', '.join(parts)
+
+    def _format_args(self, action, default_metavar):
+        get_metavar = self._metavar_formatter(action, default_metavar)
+        if action.nargs is None:
+            result = '%s' % get_metavar(1)
+        elif action.nargs == argparse.OPTIONAL:
+            result = '[%s]' % get_metavar(1)
+        elif action.nargs == argparse.ZERO_OR_MORE:
+            result = '[%s [%s ...]]' % get_metavar(2)
+        elif action.nargs == argparse.ONE_OR_MORE:
+            result = '%s [%s ...]' % get_metavar(2)
+        elif action.nargs == argparse.REMAINDER:
+            result = '...'
+        elif action.nargs == argparse.PARSER:
+            result = '<SUBCOMMAND>'
+        else:
+            formats = ['%s' for _ in range(action.nargs)]
+            result = ' '.join(formats) % get_metavar(action.nargs)
+        return result
+
+
+def main_plus():
+    parser = argparse.ArgumentParser(formatter_class=HelpFormatter)
+    parser.add_argument('-v', '--verbose', action='count')
+    subparsers = parser.add_subparsers()
+    env_options(parser)
+
+    # Setup environment
+    set_defaults()
+    load_rc(parser.prog)
+
+    # Load tasks
+    docstring, callables, default = _load_fabfile()
+    fabric.state.commands.update(callables)
+
+    # Register subcommands
+    load_subcommands(fabric.state.commands, subparsers)
+
+    args = parser.parse_args()
+
+    fabric.state.env['hosts'] = args.hosts
+    fabric.state.env['roles'] = args.roles
+    fabric.state.env['exclude_hosts'] = args.exclude_hosts
+
+    if args.verbose > 0:
+        output['everything'] = True
+
+    if hasattr(args, 'hivemind_func'):
+
+        kwargs = dict((arg, getattr(args, arg))
+                      for arg in args.hivemind_args)
+        execute(args.hivemind_func,
+                **kwargs)
