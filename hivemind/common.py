@@ -146,8 +146,20 @@ def set_defaults():
 
     # Exit if there are no hosts specified.
     env['abort_on_prompts'] = True
+
+    # Openstack Instance UUID
     env['instance_uuid'] = None
+
+    # Openstack Tenant UUID
     env['tenant_uuid'] = None
+
+    # Instead of offering heaps of ssh configuration options.  You
+    # should configure ssh.
+    env['use_ssh_config'] = True
+
+    # Output prefix is disabled here because we add it back with the
+    # python logging.
+    env['output_prefix'] = False
 
 
 def argname_to_option_flags(name):
