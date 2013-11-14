@@ -162,7 +162,10 @@ def argname_to_option_flags(name):
 
 def register_subcommand(subparsers, name, function):
     """Register a new subcommand.  Return the subcommand parser."""
-    subcommand = subparsers.add_parser(name)
+    doc = function.__doc__ or ""
+    subcommand = subparsers.add_parser(name,
+                                       help=doc,
+                                       description=doc)
     args = func_args(function)
 
     # Add the arguments and the function for extraction later.
@@ -218,62 +221,7 @@ def func_args(function):
     return inspect.getargspec(func)
 
 
-def _normal_list(docstrings=True):
-    # NOTE (RS) Sorry Kieran no indenting yet.
-    result = []
-    task_names = fabric.main._task_names(fabric.state.commands)
-    # Want separator between name, description to be straight col
-    max_len = reduce(lambda a, b: max(a, len(b)), task_names, 0)
-    sep = '  '
-    trail = '...'
-    max_width = fabric.main._pty_size()[1] - 1 - len(trail)
-    for name in task_names:
-        output = None
-        docstring = fabric.main._print_docstring(docstrings, name)
-        if docstring:
-            lines = filter(None, docstring.splitlines())
-            first_line = lines[0].strip()
-            # Truncate it if it's longer than N chars
-            size = max_width - (max_len + len(sep) + len(trail))
-            if len(first_line) > size:
-                first_line = first_line[:size] + trail
-            output = name.ljust(max_len) + sep + first_line
-        # Or nothing (so just the name)
-        else:
-            output = name
-        # argparse will insert an indent automatically, so the first
-        # line should exclude the indent.
-        if result:
-            result.append(fabric.utils.indent(output, 2))
-        else:
-            result.append(output)
-    return result
-
-
 class HelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
-    def _format_action_invocation(self, action):
-        if not action.option_strings:
-            metavar, = self._metavar_formatter(action, action.dest)(1)
-            return "\n".join(_normal_list())
-
-        else:
-            parts = []
-
-            # if the Optional doesn't take a value, format is:
-            #    -s, --long
-            if action.nargs == 0:
-                parts.extend(action.option_strings)
-
-            # if the Optional takes a value, format is:
-            #    -s ARGS, --long ARGS
-            else:
-                default = action.dest.upper()
-                args_string = self._format_args(action, default)
-                for option_string in action.option_strings:
-                    parts.append('%s %s' % (option_string, args_string))
-
-            return ', '.join(parts)
-
     def _format_args(self, action, default_metavar):
         get_metavar = self._metavar_formatter(action, default_metavar)
         if action.nargs is None:
