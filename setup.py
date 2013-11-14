@@ -34,13 +34,7 @@ setup(name='hivemind',
       [console_scripts]
       hivemind = hivemind.common:main
 
-      [hivemind.tasks]
-      gerrit = hivemind.gerrit
-      libvirt = hivemind.libvirt
-      nagios = hivemind.nagios
-      pbuilder = hivemind.pbuilder
-      puppet = hivemind.puppet
-      reprepro = hivemind.reprepro
-      swift = hivemind.swift
+      [hivemind.packages]
+      default = hivemind
       """,
       )
