@@ -203,10 +203,14 @@ def register_subcommand(subparsers, name, function):
     defaults = ((Nothing(),) * (len(args.args) - len(args.defaults or tuple()))
                 + (args.defaults or tuple()))
 
+    conf = command_config(name)
+
     # Add all the inspected arguments as flags.
     for arg, default in zip(args.args, defaults):
         kwargs = {}
-        if not isinstance(default, Nothing):
+        if conf.get(arg):
+            kwargs['default'] = conf.get(arg)
+        elif not isinstance(default, Nothing):
             kwargs['default'] = default
         else:
             kwargs['required'] = True
@@ -231,6 +235,13 @@ def load_rc(program_name):
 def load_config(filename):
     conf = CONF
     conf.read(filename)
+
+def command_config(command_name):
+    conf_section = 'cmd:%s' % command_name
+    try:
+        return dict(CONF.items(conf_section))
+    except:
+        return {}
 
 
 def load_subcommands(mapping, parser, prefix=""):
