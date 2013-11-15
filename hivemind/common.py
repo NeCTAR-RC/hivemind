@@ -1,4 +1,5 @@
 from collections import defaultdict
+import ConfigParser
 from os import path
 import argparse
 import functools
@@ -14,6 +15,9 @@ import fabric.state
 import fabric.utils
 from fabric.api import env, puts, output, execute
 from fabric.api import task as fabric_task
+
+
+CONF = ConfigParser.ConfigParser()
 
 
 def _load_fabfile(path=None, importer=None):
@@ -220,7 +224,15 @@ def load_rc(program_name):
     progrc = "." + program_name + "rc"
     filename = path.expanduser(path.join("~", progrc))
     if path.exists(filename):
-        execfile(filename, globals())
+        try:
+            load_config(filename)
+        except:
+            execfile(filename, globals())
+
+
+def load_config(filename):
+    conf = CONF
+    conf.read(filename)
 
 
 def load_subcommands(mapping, parser, prefix=""):
@@ -273,11 +285,12 @@ def main_plus():
 
     # Setup environment
     set_defaults()
-    load_rc(parser.prog)
 
     # Load tasks
     docstring, callables, default = _load_fabfile()
     fabric.state.commands.update(callables)
+
+    load_rc(parser.prog)
 
     # Register subcommands
     load_subcommands(fabric.state.commands, subparsers)
