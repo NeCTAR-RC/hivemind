@@ -49,15 +49,25 @@ def _load_package_tasks(package, universe):
 def _load_module_tasks(module, default_universe):
     # It's defaultdicts all the way down...
     all_tasks = defaultdict(lambda: defaultdict(dict))
+
+    def update_task(namespace, name, task):
+        try:
+            # Maybe override the default namespace
+            ns = task._hivemind['namespace']
+        except Exception:
+            ns = namespace
+        all_tasks[default_universe][ns].update({name: task})
+
+    def update_namespace(namespace, tasks):
+        for name, task in tasks.items():
+            if isinstance(task, dict):
+                update_namespace(name, task)
+            else:
+                update_task(namespace, name, task)
+
     module_tasks = fabric.main.extract_tasks(vars(module).items())[0]
     for namespace, tasks in module_tasks.items():
-        for name, task in tasks.items():
-            try:
-                # Maybe override the default namespace
-                ns = task._hivemind['namespace']
-            except Exception:
-                ns = namespace
-            all_tasks[default_universe][ns].update({name: task})
+        update_namespace(namespace, tasks)
     return all_tasks
 
 
