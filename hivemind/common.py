@@ -238,6 +238,22 @@ def load_config(filename):
     conf = CONF
     conf.read(filename)
 
+
+def filter_commands(commands):
+    commands = commands.copy()
+    conf = dict(CONF.items('commands'))
+    namespaces = conf.get('namespaces')
+    exclusions = conf.get('exclude_namespaces', '')
+
+    if namespaces:
+        commands = {namespace: command for namespace, command in
+            commands.items() if namespace in namespaces}
+    for exclusion in exclusions.split(','):
+        if exclusion:
+            del commands[exclusion]
+    return commands
+
+
 def command_config(command_name):
     conf_section = 'cmd:%s' % command_name
     try:
@@ -297,11 +313,16 @@ def main_plus():
     # Setup environment
     set_defaults()
 
+    # Load config
+    load_rc(parser.prog)
+
     # Load tasks
     docstring, callables, default = _load_fabfile()
-    fabric.state.commands.update(callables)
 
-    load_rc(parser.prog)
+    # Filter tasks
+    callables = filter_commands(callables)
+
+    fabric.state.commands.update(callables)
 
     # Register subcommands
     load_subcommands(fabric.state.commands, subparsers)
