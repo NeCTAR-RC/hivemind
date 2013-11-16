@@ -241,7 +241,10 @@ def load_config(filename):
 
 def filter_commands(commands):
     commands = commands.copy()
-    conf = dict(CONF.items('commands'))
+    try:
+        conf = dict(CONF.items('commands'))
+    except Exception:
+        return commands
     namespaces = conf.get('namespaces')
     exclusions = conf.get('exclude_namespaces', '')
 
@@ -258,7 +261,7 @@ def command_config(command_name):
     conf_section = 'cmd:%s' % command_name
     try:
         return dict(CONF.items(conf_section))
-    except:
+    except Exception:
         return {}
 
 
