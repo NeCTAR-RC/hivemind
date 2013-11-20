@@ -7,6 +7,7 @@ import pkg_resources
 import pkgutil
 import re
 import sys
+import os
 
 import fabric.main
 import fabric.state
@@ -222,14 +223,31 @@ def register_subcommand(subparsers, name, function):
 
 
 def load_rc(program_name):
-    """Load the users configuration file."""
-    progrc = "." + program_name + "rc"
-    filename = path.expanduser(path.join("~", progrc))
-    if path.exists(filename):
-        try:
-            load_config(filename)
-        except:
-            execfile(filename, globals())
+    """Load the users configuration file.
+    Files are expected to exist in ~/.hivemind/(progname)/
+
+    There are 2 files that are loaded.
+    - config.ini
+    - config.py
+    """
+
+    filename = path.expanduser(path.join("~", ".hivemind", program_name))
+    if not path.exists(filename):
+        os.makedirs(filename)
+
+    conf_filename = path.join(filename, "config.ini")
+    if path.exists(conf_filename):
+        load_config(conf_filename)
+    else:
+        # TODO make template based on existing tasks
+        open(conf_filename, 'a').close()
+
+    py_filename = path.join(filename, "config.py")
+    if path.exists(py_filename):
+        execfile(py_filename, globals())
+    else:
+        # TODO make template
+        open(py_filename, 'a').close()
 
 
 def load_config(filename):
