@@ -4,7 +4,7 @@ Help building packages.
 Examples:
 
 Uploading
-sixpack uploadpackage:/home/russell/packaging/cpuset_1.5.6-3.1~nectar0_amd64.changes
+sixpack uploadpackage:./packaging/cpuset_1.5.6-3.1~nectar0_amd64.changes
 
 """
 import ConfigParser
@@ -43,12 +43,19 @@ def parse_openstack_release(branch):
     return STABLE_RELEASE
 
 
-GIT_DESCRIBE_VERSION_REGEX = r"^(?P<major>\d+)\.(?P<minor>\d+)(?:\.(?P<patch>\d+)){0,1}(?:-(?P<commits>\d+)-g(?P<revision>[0-9a-f]+)){0,1}$"
+GIT_DESCRIBE_VERSION_REGEX = re.compile(
+    r"""
+    ^(?P<major>\d+)\.
+    (?P<minor>\d+)
+    (?:\.(?P<patch>\d+)){0,1}
+    (?:-(?P<commits>\d+)
+    -g(?P<revision>[0-9a-f]+)){0,1}$""",
+    re.VERBOSE)
 
 
 def git_version():
     version = git.describe()
-    m = re.search(GIT_DESCRIBE_VERSION_REGEX, version)
+    m = GIT_DESCRIBE_VERSION_REGEX.search(version)
     return m.groupdict()
 
 
@@ -94,7 +101,9 @@ def package_changes(source_package):
 
 def git_buildpackage(current_branch, upstream_tree, release):
     with pbuilder.pbuilder_env(release):
-        local("git-buildpackage -sa --git-debian-branch={0} --git-upstream-tree={1} --git-no-pristine-tar --git-force-create".format(current_branch, upstream_tree))
+        local("git-buildpackage -sa --git-debian-branch={0} "
+              "--git-upstream-tree={1} --git-no-pristine-tar "
+              "--git-force-create".format(current_branch, upstream_tree))
 
 
 @task
@@ -126,11 +135,12 @@ def buildpackage(release=None):
             upstream_date)
         version['debian'] = local(command,  capture=True)
         release_version = debian_version(current_version, version)
-        local("dch -v {0} -D precise-{1} --force-distribution 'Released'".format(
-            release_version, release))
+        local("dch -v {0} -D precise-{1} --force-distribution 'Released'"
+              .format(release_version, release))
         local("git add debian/changelog")
         local("git commit -m \"{0}\"".format("Updated Changelog."))
-        git_buildpackage(current_branch, upstream_tree=merge.old_head, release=release)
+        git_buildpackage(current_branch, upstream_tree=merge.old_head,
+                         release=release)
         # Regenerate the source package information since it's changed
         # since we updated the changelog.
         source_package = dpkg_parsechangelog()
