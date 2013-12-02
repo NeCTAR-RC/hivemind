@@ -17,7 +17,8 @@ from fabric.api import task, local, hosts, run, execute
 from hivemind import git
 from hivemind import pbuilder
 from hivemind.decorators import verbose
-from hivemind.pbuilder import OPENSTACK_RELEASES, STABLE_RELEASE, ARCH, DIST
+from hivemind.pbuilder import (OPENSTACK_RELEASES, STABLE_RELEASE, ARCH,
+                               dist_from_release)
 from hivemind import reprepro
 
 
@@ -212,7 +213,9 @@ def buildbackport(release=None, revision=1, upload=True):
 
 @task
 @verbose
-def promote(package_name, release='%s-%s' % (DIST, STABLE_RELEASE)):
+def promote(package_name,
+            release='%s-%s' % (dist_from_release(STABLE_RELEASE),
+                               STABLE_RELEASE)):
     execute(reprepro.cp_package, package_name, release + '-testing', release)
 
 
