@@ -17,7 +17,8 @@ from fabric.api import task, local, hosts, run, execute
 from hivemind import git
 from hivemind import pbuilder
 from hivemind.decorators import verbose
-from hivemind.pbuilder import OPENSTACK_RELEASES, STABLE_RELEASE, ARCH, DIST
+from hivemind.pbuilder import (OPENSTACK_RELEASES, STABLE_RELEASE, ARCH,
+                               dist_from_release)
 from hivemind import reprepro
 
 
@@ -174,8 +175,9 @@ def buildpackage(release=None, upload=True):
         current_version = source_package["Version"]
         version['debian'] = get_debian_commit_number()
         release_version = debian_version(current_version, version)
-        local("dch -v {0} -D precise-{1} --force-distribution 'Released'"
-              .format(release_version, release))
+        dist = dist_from_release(release)
+        local("dch -v {0} -D {1}-{2} --force-distribution 'Released'"
+              .format(release_version, dist, release))
         local("git add debian/changelog")
         local("git commit -m \"{0}\"".format("Updated Changelog"))
         git_buildpackage(current_branch, upstream_tree=merge.old_head,
@@ -197,10 +199,11 @@ def buildbackport(release=None, revision=1, upload=True):
     current_version = source_package["Version"]
     if not release:
         release = STABLE_RELEASE
+    dist = dist_from_release(release)
     release_version = backport_version(current_version, revision)
     if 'nectar' not in current_version:
-        local("dch -v {0} -D precise-{1} --force-distribution 'Backported'"
-              .format(release_version, release))
+        local("dch -v {0} -D {1}-{2} --force-distribution 'Backported'"
+              .format(release_version, dist, release))
     pbuilder_buildpackage(release=release)
     if upload:
         # Regenerate the source package information since it's changed
@@ -212,7 +215,9 @@ def buildbackport(release=None, revision=1, upload=True):
 
 @task
 @verbose
-def promote(package_name, release='%s-%s' % (DIST, STABLE_RELEASE)):
+def promote(package_name,
+            release='%s-%s' % (dist_from_release(STABLE_RELEASE),
+                               STABLE_RELEASE)):
     execute(reprepro.cp_package, package_name, release + '-testing', release)
 
 
