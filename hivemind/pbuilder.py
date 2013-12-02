@@ -55,11 +55,14 @@ def create(os_release=STABLE_RELEASE):
     other_mirrors = mirrors[os_release]
 
     with shell_env(ARCH=ARCH, DIST=DIST):
-        local('git-pbuilder create --mirror {mirror} --components "{components}" --othermirror "{mirrors}" --keyring {keyring} --debootstrapopts --keyring={keyring}'.format(
+        local('git-pbuilder create --basepath /var/cache/pbuilder/base-{dist}-{os_release}-{arch}.cow --mirror {mirror} --components "{components}" --othermirror "{mirrors}" --keyring {keyring} --debootstrapopts --keyring={keyring}'.format(
             mirror=mirror,
             components=components,
             mirrors="|".join(other_mirrors),
-            keyring=keyring))
+            keyring=keyring,
+            arch=ARCH,
+            dist=DIST,
+            os_release=os_release))
 
 
 @task
