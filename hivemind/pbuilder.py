@@ -4,7 +4,13 @@ Build a package
 
 from os.path import expanduser
 from fabric.api import task, local, hosts, get, settings, shell_env
-from sixpack import ARCH, DIST, STABLE_RELEASE
+
+
+DIST = "precise"
+ARCH = "amd64"
+
+STABLE_RELEASE = "grizzly"
+OPENSTACK_RELEASES = ['havana', 'grizzly']
 
 
 def build_trusted():
