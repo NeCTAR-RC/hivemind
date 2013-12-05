@@ -1,5 +1,5 @@
 from functools import wraps
-from fabric.api import env
+from fabric.api import env, show
 
 
 def _has_role(host, roles):
@@ -24,3 +24,16 @@ def only_for(*role_list):
             return
         return wrapper
     return _only_for
+
+
+def verbose(func):
+    """Make the output of this task print stdout and stderr by
+    default.
+
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        with show('stdout', 'stderr'):
+            func(*args, **kwargs)
+            return
+    return wrapper

@@ -1,5 +1,7 @@
 from fabric.api import (task, hosts, cd, run, hide)
 
+from hivemind.decorators import verbose
+
 
 def reprepro(command):
     with cd("/data/web/nectar-ubuntu"):
@@ -7,6 +9,7 @@ def reprepro(command):
 
 
 @task
+@verbose
 @hosts("mirrors.melbourne.nectar.org.au")
 def list(distribution):
     """List all packages in a distribution."""
@@ -14,6 +17,7 @@ def list(distribution):
 
 
 @task
+@verbose
 @hosts("mirrors.melbourne.nectar.org.au")
 def ls(distribution):
     """List the package version across all distributions."""
@@ -21,6 +25,7 @@ def ls(distribution):
 
 
 @task
+@verbose
 @hosts("mirrors.melbourne.nectar.org.au")
 def list_distributions():
     """List all the distributions."""
@@ -29,6 +34,7 @@ def list_distributions():
 
 
 @task
+@verbose
 @hosts("mirrors.melbourne.nectar.org.au")
 def cp_package(package, source, dest):
     """Copy a package from a source to a destination distribution."""
@@ -38,6 +44,7 @@ def cp_package(package, source, dest):
 
 
 @task
+@verbose
 @hosts("mirrors.melbourne.nectar.org.au")
 def rm_packages(distribution, source_package):
     """Remove distribution packages that belong to the given source package."""
