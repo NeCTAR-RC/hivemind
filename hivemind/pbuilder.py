@@ -3,8 +3,9 @@ Build a package
 """
 
 from os.path import expanduser
-from fabric.api import task, local, hosts, get, settings, shell_env
+from fabric.api import task, local, get, settings, shell_env
 
+from hivemind.decorators import verbose
 
 DIST = "precise"
 ARCH = "amd64"
@@ -43,7 +44,7 @@ def pbuilder_env(os_release):
 
 
 @task
-@hosts("mirrors.melbourne.nectar.org.au")
+@verbose
 def create(os_release=STABLE_RELEASE):
     """Create an environment for building packages."""
     build_trusted()
@@ -62,6 +63,7 @@ def create(os_release=STABLE_RELEASE):
 
 
 @task
+@verbose
 def shell(os_release=STABLE_RELEASE):
     """Open a shell in the packaging environment."""
     with pbuilder_env(os_release):
@@ -69,6 +71,7 @@ def shell(os_release=STABLE_RELEASE):
 
 
 @task
+@verbose
 def update(os_release=STABLE_RELEASE):
     """Update the packaging environment."""
     with pbuilder_env(os_release):
