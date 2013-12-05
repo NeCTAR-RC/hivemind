@@ -5,11 +5,11 @@ LOCK_FILE = "/var/lib/puppet/state/agent_disabled.lock"
 
 
 def disable_agent(reason):
-    run("puppet agent --disable '%s'" % reason)
+    return run("puppet agent --disable '%s'" % reason)
 
 
 def enable_agent():
-    run("puppet agent --enable")
+    return run("puppet agent --enable")
 
 
 class disabled():
@@ -43,7 +43,7 @@ def run_agent():
     # is changed, if there is an error during a run 6 will be
     # returned, a 1 will be returned if another agent is currently
     # running, and 0 will be returned if nothing has changed
-    run("puppet agent -t", warn_only=True)
+    return run("puppet agent -t", warn_only=True)
 
 
 # TODO does not with puppet 2
