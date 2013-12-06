@@ -1,16 +1,18 @@
+from collections import defaultdict
+import pkg_resources
 import sys
 
 from fabric.api import env, puts
 from fabric import main as fabric_main
-import pkg_resources
 
 
 def _load_fabfile(path, importer=None):
-    all_tasks = {}
+    all_tasks = defaultdict(dict)
     for entrypoint in pkg_resources.iter_entry_points(group='hivemind.tasks'):
         plugin = entrypoint.load()
         tasks = _load_tasks(plugin)
-        all_tasks[entrypoint.name] = tasks
+        for name, task in tasks.items():
+            all_tasks[entrypoint.name].update({name: task})
     return None, all_tasks, None
 
 
