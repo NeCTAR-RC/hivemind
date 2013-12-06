@@ -1,6 +1,20 @@
+import os
+
+from novaclient import client as nova_client
+
 from decorators import only_for
 from operations import run
 from util import current_host
+
+
+def client():
+    url = os.environ['OS_AUTH_URL']
+    username = os.environ['OS_USERNAME']
+    password = os.environ['OS_PASSWORD']
+    tenant = os.environ['OS_TENANT_NAME']
+    return nova_client.Client('2',
+                              username=username, api_key=password,
+                              project_id=tenant, auth_url=url)
 
 
 def list_services():
