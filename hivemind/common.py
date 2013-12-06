@@ -1,4 +1,5 @@
 from collections import defaultdict
+import ConfigParser
 from os import path
 import argparse
 import inspect
@@ -12,6 +13,9 @@ import fabric.state
 import fabric.utils
 from fabric.api import env, puts, output, execute
 from fabric.api import task as fabric_task
+
+
+CONF = ConfigParser.ConfigParser()
 
 
 def _load_fabfile(path=None, importer=None):
@@ -49,15 +53,25 @@ def _load_package_tasks(package, universe):
 def _load_module_tasks(module, default_universe):
     # It's defaultdicts all the way down...
     all_tasks = defaultdict(lambda: defaultdict(dict))
+
+    def update_task(namespace, name, task):
+        try:
+            # Maybe override the default namespace
+            ns = task._hivemind['namespace']
+        except Exception:
+            ns = namespace
+        all_tasks[default_universe][ns].update({name: task})
+
+    def update_namespace(namespace, tasks):
+        for name, task in tasks.items():
+            if isinstance(task, dict):
+                update_namespace(name, task)
+            else:
+                update_task(namespace, name, task)
+
     module_tasks = fabric.main.extract_tasks(vars(module).items())[0]
     for namespace, tasks in module_tasks.items():
-        for name, task in tasks.items():
-            try:
-                # Maybe override the default namespace
-                ns = task._hivemind['namespace']
-            except Exception:
-                ns = namespace
-            all_tasks[default_universe][ns].update({name: task})
+        update_namespace(namespace, tasks)
     return all_tasks
 
 
@@ -146,8 +160,20 @@ def set_defaults():
 
     # Exit if there are no hosts specified.
     env['abort_on_prompts'] = True
+
+    # Openstack Instance UUID
     env['instance_uuid'] = None
+
+    # Openstack Tenant UUID
     env['tenant_uuid'] = None
+
+    # Instead of offering heaps of ssh configuration options.  You
+    # should configure ssh.
+    env['use_ssh_config'] = True
+
+    # Output prefix is disabled here because we add it back with the
+    # python logging.
+    env['output_prefix'] = False
 
 
 def argname_to_option_flags(name):
@@ -177,10 +203,14 @@ def register_subcommand(subparsers, name, function):
     defaults = ((Nothing(),) * (len(args.args) - len(args.defaults or tuple()))
                 + (args.defaults or tuple()))
 
+    conf = command_config(name)
+
     # Add all the inspected arguments as flags.
     for arg, default in zip(args.args, defaults):
         kwargs = {}
-        if not isinstance(default, Nothing):
+        if conf.get(arg):
+            kwargs['default'] = conf.get(arg)
+        elif not isinstance(default, Nothing):
             kwargs['default'] = default
         else:
             kwargs['required'] = True
@@ -196,7 +226,41 @@ def load_rc(program_name):
     progrc = "." + program_name + "rc"
     filename = path.expanduser(path.join("~", progrc))
     if path.exists(filename):
-        execfile(filename, globals())
+        try:
+            load_config(filename)
+        except:
+            execfile(filename, globals())
+
+
+def load_config(filename):
+    conf = CONF
+    conf.read(filename)
+
+
+def filter_commands(commands):
+    commands = commands.copy()
+    try:
+        conf = dict(CONF.items('commands'))
+    except Exception:
+        return commands
+    namespaces = conf.get('namespaces')
+    exclusions = conf.get('exclude_namespaces', '')
+
+    if namespaces:
+        commands = {namespace: command for namespace, command in
+            commands.items() if namespace in namespaces}
+    for exclusion in exclusions.split(','):
+        if exclusion:
+            del commands[exclusion]
+    return commands
+
+
+def command_config(command_name):
+    conf_section = 'cmd:%s' % command_name
+    try:
+        return dict(CONF.items(conf_section))
+    except Exception:
+        return {}
 
 
 def load_subcommands(mapping, parser, prefix=""):
@@ -249,10 +313,16 @@ def main_plus():
 
     # Setup environment
     set_defaults()
+
+    # Load config
     load_rc(parser.prog)
 
     # Load tasks
     docstring, callables, default = _load_fabfile()
+
+    # Filter tasks
+    callables = filter_commands(callables)
+
     fabric.state.commands.update(callables)
 
     # Register subcommands
