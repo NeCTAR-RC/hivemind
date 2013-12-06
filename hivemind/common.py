@@ -1,5 +1,7 @@
 from collections import defaultdict
 import pkg_resources
+import pkgutil
+import re
 import sys
 
 from fabric.api import env, puts
@@ -9,21 +11,49 @@ from fabric import main as fabric_main
 
 def _load_fabfile(path, importer=None):
     all_tasks = defaultdict(dict)
-    for entrypoint in pkg_resources.iter_entry_points(group='hivemind.tasks'):
+    for entrypoint in pkg_resources.iter_entry_points(group='hivemind.packages'):
         plugin = entrypoint.load()
-        tasks = _load_tasks(plugin)
-        for name, task in tasks.items():
-            all_tasks[entrypoint.name].update({name: task})
-            try:
-                namespace = task.wrapped._hivemind['namespace']
-            except Exception:
-                namespace = entrypoint.name
-            all_tasks[namespace].update({name: task})
+        tasks = _load_package_tasks(plugin, entrypoint.name)
+        for k, v in tasks.items():
+            all_tasks[k].update(v)
+
+    for k, v in all_tasks['default'].items():
+        all_tasks[k].update(v)
+    del all_tasks['default']
+
     return None, all_tasks, None
 
 
-def _load_tasks(imported):
-    return fabric_main.extract_tasks(vars(imported).items())[0]
+def _load_package_tasks(package, universe):
+    all_tasks = defaultdict(dict)
+    package_iter = pkgutil.walk_packages(
+        path=package.__path__,
+        prefix=package.__name__+'.',
+        onerror=lambda x: None)
+    for importer, modname, ispkg in package_iter:
+        if re.search(r'.*\.tests.*', modname):
+            continue
+        module = importer.find_module(modname)
+        module = __import__(modname)
+        tasks = _load_module_tasks(module, universe)
+        for k, v in tasks.items():
+            all_tasks[k].update(v)
+    return all_tasks
+
+
+def _load_module_tasks(module, default_universe):
+    # It's defaultdicts all the way down...
+    all_tasks = defaultdict(lambda: defaultdict(dict))
+    module_tasks = fabric_main.extract_tasks(vars(module).items())[0]
+    for namespace, tasks in module_tasks.items():
+        for name, task in tasks.items():
+            try:
+                # Maybe override the default namespace
+                ns = task._hivemind['namespace']
+            except Exception:
+                ns = namespace
+            all_tasks[default_universe][ns].update({name: task})
+    return all_tasks
 
 
 def task(namespace=None, *args, **kwargs):
