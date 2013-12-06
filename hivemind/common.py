@@ -3,6 +3,7 @@ import pkg_resources
 import sys
 
 from fabric.api import env, puts
+from fabric.api import task as fabric_task
 from fabric import main as fabric_main
 
 
@@ -13,11 +14,28 @@ def _load_fabfile(path, importer=None):
         tasks = _load_tasks(plugin)
         for name, task in tasks.items():
             all_tasks[entrypoint.name].update({name: task})
+            try:
+                namespace = task.wrapped._hivemind['namespace']
+            except Exception:
+                namespace = entrypoint.name
+            all_tasks[namespace].update({name: task})
     return None, all_tasks, None
 
 
 def _load_tasks(imported):
     return fabric_main.extract_tasks(vars(imported).items())[0]
+
+
+def task(namespace=None, *args, **kwargs):
+    def decorator(func):
+        t = fabric_task(*args, **kwargs)
+        wrapper = t(func)
+        if namespace is not None:
+            if not hasattr(wrapper, '_hivemind'):
+                wrapper._hivemind = {}
+            wrapper._hivemind['namespace'] = namespace
+        return wrapper
+    return decorator
 
 
 def main(filename=__file__):
