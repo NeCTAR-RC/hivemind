@@ -16,7 +16,7 @@ from fabric.api import task, local, hosts, run, execute
 
 from hivemind import git
 from hivemind import pbuilder
-
+from hivemind.decorators import verbose
 from hivemind.pbuilder import OPENSTACK_RELEASES, STABLE_RELEASE, ARCH
 
 
@@ -107,6 +107,7 @@ def git_buildpackage(current_branch, upstream_tree, release):
 
 
 @task
+@verbose
 @hosts("mirrors.melbourne.nectar.org.au")
 def uploadpackage(package):
     """Upload a package to the repository, using the changes file."""
@@ -115,6 +116,7 @@ def uploadpackage(package):
 
 
 @task
+@verbose
 def buildpackage(release=None):
     """Build a package for the current repository."""
     git.assert_in_repository()
@@ -149,6 +151,7 @@ def buildpackage(release=None):
 
 
 @task
+@verbose
 def create_deb_branch(branch_name, source_debian_dir):
     """Create a debian branch from a source debian directory."""
     # Make sure the repo is clean, since we run git clean later
