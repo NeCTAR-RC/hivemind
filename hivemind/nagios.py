@@ -72,7 +72,8 @@ def services_in_maintenance():
     for tr in nodes[1]:
         if tr.getchildren()[0].tag == "th":
             continue
-        if tr.getchildren()[0].text == 'There are no services with scheduled downtime':
+        if tr.getchildren()[0].text == \
+           'There are no services with scheduled downtime':
             continue
         host = tr.getchildren()[0].getchildren()[0].text
         service = tr.getchildren()[1].getchildren()[0].text
@@ -94,7 +95,7 @@ def host_is_in_maintenance(reason):
 
 
 def ensure_host_maintenance(comment, start_time=None,
-                          hours=2, minutes=0, fixed=False):
+                            hours=2, minutes=0, fixed=False):
 
     if not host_is_in_maintenance(comment):
         host_maintenance(comment, hours=1)
