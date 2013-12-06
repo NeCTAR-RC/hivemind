@@ -112,12 +112,12 @@ def env_options(parser):
     )
 
     parser.add_argument(
-        '-x', '--exclude-hosts',
+        '-X', '--exclude-hosts',
         default=[],
         action='append',
         metavar='HOST',
         help="host to exclude."
-    ),
+    )
 
 
 def set_defaults():
@@ -130,6 +130,14 @@ def set_defaults():
 
     # Exit if there are no hosts specified.
     env['abort_on_prompts'] = True
+
+
+def argname_to_option_flags(name):
+    long_name = "--" + name.replace('_', '-').lower()
+    short_name = "-" + name[0].lower()
+    if short_name[1].isalpha():
+        return (long_name, short_name)
+    return (long_name,)
 
 
 def register_subcommand(subparsers, name, function):
@@ -156,7 +164,8 @@ def register_subcommand(subparsers, name, function):
         else:
             kwargs['required'] = True
 
-        subcommand.add_argument('--' + arg, action='store', **kwargs)
+        subcommand.add_argument(*argname_to_option_flags(arg),
+                                action='store', **kwargs)
 
     return subcommand
 
@@ -266,7 +275,8 @@ class HelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
 
 def main_plus():
-    parser = argparse.ArgumentParser(formatter_class=HelpFormatter)
+    parser = argparse.ArgumentParser(formatter_class=HelpFormatter,
+                                     conflict_handler='resolve')
     parser.add_argument('-v', '--verbose', action='count')
     subparsers = parser.add_subparsers()
     env_options(parser)
