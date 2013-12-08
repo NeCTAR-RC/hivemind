@@ -322,7 +322,7 @@ class HelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         return result
 
 
-def main_plus():
+def state_init():
     parser = argparse.ArgumentParser(formatter_class=HelpFormatter,
                                      conflict_handler='resolve')
     parser.add_argument('-v', '--verbose', action='count')
@@ -346,7 +346,14 @@ def main_plus():
     # Register subcommands
     load_subcommands(fabric.state.commands, subparsers)
 
-    args = parser.parse_args()
+    return parser
+
+
+def execute_args(parser, argv=None):
+    if argv is None:
+        args = parser.parse_args()
+    else:
+        args = parser.parse_args(argv)
 
     fabric.state.env['hosts'] = args.hosts
     fabric.state.env['roles'] = args.roles
@@ -365,3 +372,25 @@ def main_plus():
                       for arg in args.hivemind_args)
         execute(args.hivemind_func,
                 **kwargs)
+
+
+def list_commands():
+    for key, value in fabric.state.commands.items():
+        for cmd in value.keys():
+            yield '%s.%s' % (key, cmd)
+
+
+def list_arguments(cmd):
+    namespace, command = cmd.split('.')
+    command = fabric.state.commands[namespace][command]
+    argspec = func_args(command)
+    return argspec.args
+
+
+def main_plus():
+    parser = state_init()
+    if len(sys.argv) == 2 and sys.argv[1] == 'shell':
+        from hivemind import shell
+        shell.shell(parser)
+    else:
+        execute_args(parser)
