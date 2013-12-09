@@ -34,6 +34,7 @@ setup(name='hivemind',
       # -*- Entry points: -*-
       [console_scripts]
       hivemind = hivemind.common:main_plus
+      sixpack = hivemind.common:main
 
       [hivemind.packages]
       default = hivemind
