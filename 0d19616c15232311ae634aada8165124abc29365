@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "AAAATn//93g\u003d",
+        "filename": "hivemind/common.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 378,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-12-10T03:59:43Z",
+      "side": 1,
+      "message": "shouldn\u0027t we use six.iteritems",
+      "revId": "0d19616c15232311ae634aada8165124abc29365",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//93o\u003d",
+        "filename": "hivemind/common.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-12-10T03:59:43Z",
+      "side": 1,
+      "message": "if this to avoid using argparse subcommands to launch the shell.  could we not just do that once the parser is executed in the execute_args function then just throw the parser away?",
+      "revId": "0d19616c15232311ae634aada8165124abc29365",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//93k\u003d",
+        "filename": "hivemind/shell.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-12-10T03:59:43Z",
+      "side": 1,
+      "message": "this should probably have the value of sys.argv[0] + \u0027\u003e\u0027",
+      "revId": "0d19616c15232311ae634aada8165124abc29365",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//93c\u003d",
+        "filename": "hivemind/shell.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-12-10T03:59:43Z",
+      "side": 1,
+      "message": "can we modify the task decorator instead of monkeypatching the task objects?",
+      "revId": "0d19616c15232311ae634aada8165124abc29365",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAATn//93s\u003d",
+        "filename": "hivemind/shell.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2013-12-10T03:59:43Z",
+      "side": 1,
+      "message": "it would be nice to add some doc string to these complex methods, i\u0027m assuming that this adds completion.\n\nbut then you  map the multiplication of  the * char as a prefix to the command which you  are searching for, is that a filter or used by something else?",
+      "revId": "0d19616c15232311ae634aada8165124abc29365",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
