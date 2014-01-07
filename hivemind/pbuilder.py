@@ -10,7 +10,7 @@ from hivemind.decorators import verbose
 DIST = "precise"
 ARCH = "amd64"
 
-STABLE_RELEASE = "grizzly"
+STABLE_RELEASE = "havana"
 OPENSTACK_RELEASES = ['havana', 'grizzly']
 
 
