@@ -8,6 +8,8 @@ def run(command, shell=True, pty=True, combine_stderr=None, quiet=False,
         shell_escape=None):
     result = None
 
+    env.disable_known_hosts = True
+
     if (not stdout) and (not stderr):
         stdout, stderr = log.stdio()
     try:
