@@ -3,7 +3,7 @@ from itertools import chain
 from collections import defaultdict
 
 from prettytable import PrettyTable
-from fabric.api import task, puts, execute, env
+from fabric.api import task, puts, execute, env, hosts
 from fabric.utils import error
 
 from hivemind.operations import run
@@ -70,3 +70,15 @@ def vm_rules():
             table.add_row([rule['target'], rule['protocol'], rule['source'],
                            rule['destination'], rule['filter']])
         puts("\n%s\n%s\n" % (server.id, str(table)))
+
+
+@task
+@hosts('cell1.rc.nectar.org.au')
+def sync_vm_rules():
+    """Sync security groups for the given instance UUID (-I)"""
+    if not env.instance_uuid:
+        error("No instance_uuid specified.")
+    uuid = env.instance_uuid
+    nova_client = client()
+    server = nova_client.servers.get(uuid)
+    run('nova-manage project sync_secgroups %s' % server.tenant_id)
