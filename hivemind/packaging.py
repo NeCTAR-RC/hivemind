@@ -70,7 +70,7 @@ def debian_version(old_version, version):
     if new_version['patch'] is not None:
         deb_version += ".{patch}"
     if new_version['revision'] is not None:
-        deb_version += ".a{commits}+g{revision}"
+        deb_version += "+a{commits}~g{revision}"
     deb_version += "-{debian}"
     return deb_version.format(**new_version)
 
