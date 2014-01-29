@@ -41,8 +41,9 @@ def create(name):
 @verbose
 def push_to(remote_path):
     """Push the current git repository to a gerrit repo."""
+    user = gitreview_username()
     local('git push ssh://%s@review.rc.nectar.org.au:29418/%s *:*' % (
-        USER, remote_path))
+        user, remote_path))
 
 
 @task
