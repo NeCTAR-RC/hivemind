@@ -108,7 +108,7 @@ def git_buildpackage(current_branch, upstream_tree, release):
 
 @task
 @verbose
-@hosts("mirrors.melbourne.nectar.org.au")
+@hosts("repo@mirrors.melbourne.nectar.org.au")
 def uploadpackage(package):
     """Upload a package to the repository, using the changes file."""
     local("dupload {0}".format(package))
