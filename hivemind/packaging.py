@@ -17,7 +17,8 @@ from fabric.api import task, local, hosts, run, execute
 from hivemind import git
 from hivemind import pbuilder
 from hivemind.decorators import verbose
-from hivemind.pbuilder import OPENSTACK_RELEASES, STABLE_RELEASE, ARCH
+from hivemind.pbuilder import OPENSTACK_RELEASES, STABLE_RELEASE, ARCH, DIST
+from hivemind import reprepro
 
 
 def debian_branch(version):
@@ -148,6 +149,12 @@ def buildpackage(release=None):
         source_package = dpkg_parsechangelog()
         changes = package_changes(source_package)
     execute(uploadpackage, "{0}/{1}".format(package_export_dir(), changes))
+
+
+@task
+@verbose
+def promote(package_name, release='%s-%s' % (DIST, STABLE_RELEASE)):
+    execute(reprepro.cp_package, package_name, release + '-testing', release)
 
 
 @task
