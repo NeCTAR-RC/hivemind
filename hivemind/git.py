@@ -1,6 +1,7 @@
 from fabric.api import puts, local, abort, hide, settings
 from fabric.colors import green
 
+import util
 
 def assert_in_repository():
     with hide("everything"):
@@ -34,7 +35,7 @@ def current_branch():
 
 
 def branch_exists(branch_name):
-    with settings(warn_only=True):
+    with util.hide_and_ignore():
         result = local("git show-ref --verify --quiet refs/heads/{0}".format(branch_name))
         return result.succeeded
 
