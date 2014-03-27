@@ -34,7 +34,7 @@ def current_branch():
 
 
 def branch_exists(branch_name):
-    with settings(warn_only=True):
+    with settings(warn_only=True), hide("everything"):
         result = local("git show-ref --verify --quiet refs/heads/{0}".format(branch_name))
         return result.succeeded
 
