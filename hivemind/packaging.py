@@ -130,6 +130,8 @@ def buildpackage(release=None):
     deb_branch = debian_branch(version)
     if not git.branch_exists(deb_branch):
         deb_branch = "debian/{0}".format(release)
+    assert git.branch_exists(deb_branch), \
+        "Debian branch %s doesn't exist" % deb_branch
 
     with git.temporary_merge(deb_branch) as merge:
         source_package = dpkg_parsechangelog()
