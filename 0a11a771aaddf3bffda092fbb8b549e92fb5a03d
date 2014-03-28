@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "AAAAT3//+y4\u003d",
+        "filename": "hivemind/packaging.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2014-03-28T04:11:08Z",
+      "side": 1,
+      "message": "Should this be moved to the else branch?",
+      "revId": "0a11a771aaddf3bffda092fbb8b549e92fb5a03d",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
