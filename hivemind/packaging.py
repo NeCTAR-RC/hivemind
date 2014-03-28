@@ -7,7 +7,6 @@ Uploading
 sixpack uploadpackage:./packaging/cpuset_1.5.6-3.1~nectar0_amd64.changes
 
 """
-import ConfigParser
 import email
 import os
 import re
@@ -63,7 +62,7 @@ def git_version():
 
 
 def debian_version(old_version, version):
-    """convert a git version to a debian one."""
+    """Convert a git version to a debian one."""
     new_version = version.copy()
     deb_version = ""
     if ":" in old_version:  # version has epoc.
@@ -78,16 +77,14 @@ def debian_version(old_version, version):
     return deb_version.format(**new_version)
 
 
+def backport_version(version, revision=1):
+    return "%s+nectar%s" % (version, revision)
+
+
 def version_without_epoc(version):
     if ":" in version:
         return version.split(":")[1]
     return version
-
-
-def package_export_dir():
-    config = ConfigParser.ConfigParser()
-    config.read(os.path.expanduser('~/.gbp.conf'))
-    return config.get('git-buildpackage', 'export-dir')
 
 
 def dpkg_parsechangelog():
@@ -100,6 +97,11 @@ def package_changes(source_package):
         source_package["Source"],
         version_without_epoc(source_package["Version"]),
         ARCH)
+
+
+def pbuilder_buildpackage(release):
+    with pbuilder.pbuilder_env(release):
+        local("git-pbuilder -sa")
 
 
 def git_buildpackage(current_branch, upstream_tree, release):
@@ -156,7 +158,29 @@ def buildpackage(release=None):
         # since we updated the changelog.
         source_package = dpkg_parsechangelog()
         changes = package_changes(source_package)
-    execute(uploadpackage, "{0}/{1}".format(package_export_dir(), changes))
+    execute(uploadpackage, "{0}/{1}".format(pbuilder.package_export_dir(), changes))
+
+
+@task
+@verbose
+def buildbackport(release=None, revision=1):
+    """Build a package from a downloaded deb source."""
+    assert os.path.exists('debian/'), "can't find debian directory."
+    source_package = dpkg_parsechangelog()
+    current_version = source_package["Version"]
+    if not release:
+        release = STABLE_RELEASE
+    release_version = backport_version(current_version, revision)
+    if 'nectar' not in current_version:
+        local("dch -v {0} -D precise-{1} --force-distribution 'Backported'"
+              .format(release_version, release))
+    pbuilder_buildpackage(release=release)
+    # Regenerate the source package information since it's changed
+    # since we updated the changelog.
+    source_package = dpkg_parsechangelog()
+    changes = package_changes(source_package)
+
+    execute(uploadpackage, "{0}/{1}".format(pbuilder.package_export_dir(), changes))
 
 
 @task
