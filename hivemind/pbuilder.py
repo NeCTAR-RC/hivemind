@@ -1,8 +1,10 @@
 """
 Build a package
 """
-
+import ConfigParser
+import os
 from os.path import expanduser
+
 from fabric.api import task, local, get, settings, shell_env
 
 from hivemind.decorators import verbose
@@ -38,9 +40,16 @@ mirrors = {
 }
 
 
+def package_export_dir():
+    config = ConfigParser.ConfigParser()
+    config.read(os.path.expanduser('~/.gbp.conf'))
+    return os.path.abspath(config.get('git-buildpackage', 'export-dir'))
+
+
 def pbuilder_env(os_release):
     dist_release = '{0}-{1}'.format(DIST, os_release)
-    return shell_env(ARCH=ARCH, DIST=dist_release)
+    return shell_env(ARCH=ARCH, DIST=dist_release,
+                     GIT_PBUILDER_OUTPUT_DIR=package_export_dir())
 
 
 @task
