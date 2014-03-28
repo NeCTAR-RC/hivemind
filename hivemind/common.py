@@ -178,6 +178,10 @@ def set_defaults():
 
 
 def argname_to_option_flags(name):
+    """Return an argument tuple that contains both the long and short form
+    of the argument e.g. ('--long', '-l')
+
+    """
     long_name = "--" + name.replace('_', '-').lower()
     short_name = "-" + name[0].lower()
     if short_name[1].isalpha():
@@ -205,6 +209,7 @@ def register_subcommand(subparsers, name, function):
                 + (args.defaults or tuple()))
 
     conf = command_config(name)
+    used_short_args = set()
 
     # Add all the inspected arguments as flags.
     for arg, default in zip(args.args, defaults):
@@ -216,8 +221,15 @@ def register_subcommand(subparsers, name, function):
         else:
             kwargs['required'] = True
 
-        subcommand.add_argument(*argname_to_option_flags(arg),
-                                action='store', **kwargs)
+        cli_args = argname_to_option_flags(arg)
+
+        # Strip duplicate short arguments
+        if cli_args[-1] in used_short_args:
+            cli_args = cli_args[:-1]
+        else:
+            used_short_args.add(cli_args[-1])
+
+        subcommand.add_argument(*cli_args, action='store', **kwargs)
 
     return subcommand
 
