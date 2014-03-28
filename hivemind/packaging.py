@@ -128,10 +128,14 @@ def buildpackage(release=None):
     if release is None:
         release = parse_openstack_release(current_branch)
     deb_branch = debian_branch(version)
-    if not git.branch_exists(deb_branch):
-        deb_branch = "debian/{0}".format(release)
-    assert git.branch_exists(deb_branch), \
-        "Debian branch %s doesn't exist" % deb_branch
+    if os.path.exists(os.path.join(git.root_dir(), 'debian/')):
+        deb_branch = current_branch
+    else:
+        if not git.branch_exists(deb_branch):
+            deb_branch = "debian/{0}".format(release)
+
+        assert git.branch_exists(deb_branch), \
+            "Debian branch %s doesn't exist" % deb_branch
 
     with git.temporary_merge(deb_branch) as merge:
         source_package = dpkg_parsechangelog()
