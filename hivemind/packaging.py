@@ -56,8 +56,10 @@ GIT_DESCRIBE_VERSION_REGEX = re.compile(
 
 def git_version():
     version = git.describe()
-    m = GIT_DESCRIBE_VERSION_REGEX.search(version)
-    return m.groupdict()
+    match = GIT_DESCRIBE_VERSION_REGEX.search(version)
+    if not match:
+        raise Exception("Unable to parse version %s" % version)
+    return match.groupdict()
 
 
 def debian_version(old_version, version):
