@@ -16,6 +16,24 @@
       "revId": "22e774ecdc3ca825ed1e2c044db83006346c6962",
       "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAAT3//+0o\u003d",
+        "filename": "hivemind/git.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2014-03-28T00:32:07Z",
+      "side": 1,
+      "message": "yes",
+      "parentUuid": "AAAAT3//+1A\u003d",
+      "revId": "22e774ecdc3ca825ed1e2c044db83006346c6962",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
     }
   ]
 }
