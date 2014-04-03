@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "AAAAT3//+m0\u003d",
+        "filename": "hivemind/packaging.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2014-04-03T01:32:34Z",
+      "side": 1,
+      "message": "The default behavior is to upload.\n\nSay i change this to upload.\n\nThen the command line will be \n\nhivemind packaging.buildpackage --upload\n\nwhich will result in no upload happening.",
+      "parentUuid": "AAAAT3//+oE\u003d",
+      "revId": "fb2d41c498055f4d733db8e1257a8a9350b82a79",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "AAAAT3//+oA\u003d",
         "filename": "hivemind/packaging.py",
         "patchSetId": 1
