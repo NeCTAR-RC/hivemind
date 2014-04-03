@@ -29,6 +29,11 @@ def head():
         return local("git rev-parse HEAD", capture=True)
 
 
+def root_dir():
+    with hide("everything"):
+        return local("git rev-parse --show-toplevel", capture=True)
+
+
 def current_branch():
     with hide("everything"):
         return local("git rev-parse --symbolic-full-name --abbrev-ref HEAD", capture=True)
