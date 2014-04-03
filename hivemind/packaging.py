@@ -151,7 +151,7 @@ def buildpackage(release=None, no_upload=False):
         local("dch -v {0} -D precise-{1} --force-distribution 'Released'"
               .format(release_version, release))
         local("git add debian/changelog")
-        local("git commit -m \"{0}\"".format("Updated Changelog."))
+        local("git commit -m \"{0}\"".format("Updated Changelog"))
         git_buildpackage(current_branch, upstream_tree=merge.old_head,
                          release=release)
         # Regenerate the source package information since it's changed
