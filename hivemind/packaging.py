@@ -122,20 +122,20 @@ def uploadpackage(package):
 
 @task
 @verbose
-def buildpackage(release=None):
+def buildpackage(release=None, upload=True):
     """Build a package for the current repository."""
     git.assert_in_repository()
     version = git_version()
     current_branch = git.current_branch()
     if release is None:
         release = parse_openstack_release(current_branch)
-    deb_branch = debian_branch(version)
+
     if os.path.exists(os.path.join(git.root_dir(), 'debian/')):
         deb_branch = current_branch
     else:
+        deb_branch = debian_branch(version)
         if not git.branch_exists(deb_branch):
             deb_branch = "debian/{0}".format(release)
-
         assert git.branch_exists(deb_branch), \
             "Debian branch %s doesn't exist" % deb_branch
 
@@ -158,12 +158,14 @@ def buildpackage(release=None):
         # since we updated the changelog.
         source_package = dpkg_parsechangelog()
         changes = package_changes(source_package)
-    execute(uploadpackage, "{0}/{1}".format(pbuilder.package_export_dir(), changes))
+    if upload:
+        execute(uploadpackage, "{0}/{1}".format(pbuilder.package_export_dir(),
+                                                changes))
 
 
 @task
 @verbose
-def buildbackport(release=None, revision=1):
+def buildbackport(release=None, revision=1, upload=True):
     """Build a package from a downloaded deb source."""
     assert os.path.exists('debian/'), "can't find debian directory."
     source_package = dpkg_parsechangelog()
@@ -179,8 +181,9 @@ def buildbackport(release=None, revision=1):
     # since we updated the changelog.
     source_package = dpkg_parsechangelog()
     changes = package_changes(source_package)
-
-    execute(uploadpackage, "{0}/{1}".format(pbuilder.package_export_dir(), changes))
+    if upload:
+        execute(uploadpackage, "{0}/{1}".format(pbuilder.package_export_dir(),
+                                                changes))
 
 
 @task
