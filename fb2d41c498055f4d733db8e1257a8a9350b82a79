@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "AAAAT3//+oE\u003d",
+        "filename": "hivemind/packaging.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2014-04-03T01:22:09Z",
+      "side": 1,
+      "message": "Can we invert this to upload\u003dTrue. Negative bools are confusing.",
+      "revId": "fb2d41c498055f4d733db8e1257a8a9350b82a79",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAAT3//+oA\u003d",
+        "filename": "hivemind/packaging.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2014-04-03T01:22:09Z",
+      "side": 1,
+      "message": "As above.",
+      "revId": "fb2d41c498055f4d733db8e1257a8a9350b82a79",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
