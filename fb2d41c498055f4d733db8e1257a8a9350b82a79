@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "AAAAT3//+mo\u003d",
+        "filename": "hivemind/packaging.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2014-04-03T01:41:25Z",
+      "side": 1,
+      "message": "Doesn\u0027t this imply that anything\u003dTrue won\u0027t make sense with this change? Maybe we should prepend \u0027no-\u0027 in common.py if the default is True?",
+      "parentUuid": "AAAAT3//+m0\u003d",
+      "revId": "fb2d41c498055f4d733db8e1257a8a9350b82a79",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "AAAAT3//+oA\u003d",
         "filename": "hivemind/packaging.py",
         "patchSetId": 1
