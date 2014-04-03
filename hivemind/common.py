@@ -221,6 +221,12 @@ def register_subcommand(subparsers, name, function):
         else:
             kwargs['required'] = True
 
+        action = 'store'
+        if default is True:
+            action = 'store_false'
+        if default is False:
+            action = 'store_true'
+
         cli_args = argname_to_option_flags(arg)
 
         # Strip duplicate short arguments
@@ -229,7 +235,7 @@ def register_subcommand(subparsers, name, function):
         else:
             used_short_args.add(cli_args[-1])
 
-        subcommand.add_argument(*cli_args, action='store', **kwargs)
+        subcommand.add_argument(*cli_args, action=action, **kwargs)
 
     return subcommand
 
@@ -278,7 +284,7 @@ def filter_commands(commands):
 
     if namespaces:
         commands = {namespace: command for namespace, command in
-            commands.items() if namespace in namespaces}
+                    commands.items() if namespace in namespaces}
     for exclusion in exclusions.split(','):
         if exclusion:
             del commands[exclusion]
