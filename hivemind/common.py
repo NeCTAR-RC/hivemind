@@ -198,8 +198,7 @@ def register_subcommand(subparsers, name, function):
     args = func_args(function)
 
     # Add the arguments and the function for extraction later.
-    subcommand.set_defaults(hivemind_func=function,
-                            hivemind_args=args.args)
+    subcommand.set_defaults(hivemind_func=function)
 
     class Nothing:
         pass
@@ -211,6 +210,22 @@ def register_subcommand(subparsers, name, function):
     conf = command_config(name)
     used_short_args = set()
 
+    def args_to_options(arg, negative=False):
+        options = argname_to_option_flags(arg)
+
+        # Strip duplicate short arguments
+        if options[-1] in used_short_args:
+            options = options[:-1]
+        # No short argument for negative arguments
+        elif negative:
+            options = options[:-1]
+        else:
+            used_short_args.add(options[-1])
+        return options
+
+    # A list of (argparse_arg, func_arg) mappings
+    arg_mapping = []
+
     # Add all the inspected arguments as flags.
     for arg, default in zip(args.args, defaults):
         kwargs = {}
@@ -221,15 +236,22 @@ def register_subcommand(subparsers, name, function):
         else:
             kwargs['required'] = True
 
-        cli_args = argname_to_option_flags(arg)
-
-        # Strip duplicate short arguments
-        if cli_args[-1] in used_short_args:
-            cli_args = cli_args[:-1]
+        if default is True:
+            kwargs['default'] = not default
+            narg = 'no_' + arg
+            arg_mapping.append((narg, arg))
+            subcommand.add_argument(*args_to_options(narg, negative=True),
+                                    action='store_false', **kwargs)
+        elif default is False:
+            arg_mapping.append((arg, arg))
+            subcommand.add_argument(*args_to_options(arg),
+                                    action='store_true', **kwargs)
         else:
-            used_short_args.add(cli_args[-1])
+            arg_mapping.append((arg, arg))
+            option = args_to_options(arg)
+            subcommand.add_argument(*option, action='store', **kwargs)
 
-        subcommand.add_argument(*cli_args, action='store', **kwargs)
+    subcommand.set_defaults(hivemind_arg_mapping=arg_mapping)
 
     return subcommand
 
@@ -278,7 +300,7 @@ def filter_commands(commands):
 
     if namespaces:
         commands = {namespace: command for namespace, command in
-            commands.items() if namespace in namespaces}
+                    commands.items() if namespace in namespaces}
     for exclusion in exclusions.split(','):
         if exclusion:
             del commands[exclusion]
@@ -372,8 +394,8 @@ def main_plus():
     output['user'] = True
 
     if hasattr(args, 'hivemind_func'):
-
-        kwargs = dict((arg, getattr(args, arg))
-                      for arg in args.hivemind_args)
+        kwargs = dict(
+            (func_arg, getattr(args, argparser_arg))
+            for (argparser_arg, func_arg) in args.hivemind_arg_mapping)
         execute(args.hivemind_func,
                 **kwargs)
