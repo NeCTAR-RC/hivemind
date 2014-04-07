@@ -11,6 +11,7 @@ import email
 import os
 import re
 
+from debian import deb822
 from fabric.api import task, local, hosts, run, execute
 
 from hivemind import git
@@ -93,10 +94,20 @@ def dpkg_parsechangelog():
 
 
 def package_changes(source_package):
-    return "{0}_{1}_{2}.changes".format(
+    return package_file(source_package, 'changes')
+
+
+def package_upload(source_package):
+    return package_file(source_package, 'upload')
+
+
+def package_file(source_package, extension):
+    return "{0}/{1}_{2}_{3}.{4}".format(
+        package_export_dir(),
         source_package["Source"],
         version_without_epoc(source_package["Version"]),
-        ARCH)
+        ARCH,
+        extension)
 
 
 def pbuilder_buildpackage(release):
@@ -117,6 +128,24 @@ def git_buildpackage(current_branch, upstream_tree, release):
 def uploadpackage(package):
     """Upload a package to the repository, using the changes file."""
     local("dupload {0}".format(package))
+    run("import-new-debs.sh")
+
+
+@task
+@verbose
+@hosts("repo@mirrors.melbourne.nectar.org.au")
+def upload_from_source(changes):
+    """Upload a package to the repository, using the changes file."""
+    data = open(changes).read()
+    source_package = deb822.Changes(data)
+    # Delete .upload file so dupload always refreshes the files.
+    upload = package_upload(source_package)
+    local("rm -f {0}".format(upload))
+    local("dupload {0}".format(changes))
+    # Remove previous package from repository.
+    distribution = "{0}-testing".format(source_package["Distribution"])
+    execute(reprepro.rm_packages, distribution, source_package["Source"])
+    # Import new packages into repository.
     run("import-new-debs.sh")
 
 
