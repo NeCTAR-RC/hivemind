@@ -120,6 +120,14 @@ def uploadpackage(package):
     run("import-new-debs.sh")
 
 
+def get_debian_commit_number():
+    upstream_date = local("git log -1 --pretty='%ci' ORIG_HEAD",
+                          capture=True)
+    command = "git log --oneline --no-merges --since='{0}' | wc -l".format(
+        upstream_date)
+    return local(command,  capture=True)
+
+
 @task
 @verbose
 def buildpackage(release=None, upload=True):
@@ -142,11 +150,7 @@ def buildpackage(release=None, upload=True):
     with git.temporary_merge(deb_branch) as merge:
         source_package = dpkg_parsechangelog()
         current_version = source_package["Version"]
-        upstream_date = local("git log -1 --pretty='%ci' ORIG_HEAD",
-                              capture=True)
-        command = "git log --oneline --no-merges --since='{0}' | wc -l".format(
-            upstream_date)
-        version['debian'] = local(command,  capture=True)
+        version['debian'] = get_debian_commit_number()
         release_version = debian_version(current_version, version)
         local("dch -v {0} -D precise-{1} --force-distribution 'Released'"
               .format(release_version, release))
