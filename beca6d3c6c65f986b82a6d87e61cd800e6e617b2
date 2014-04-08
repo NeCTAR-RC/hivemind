@@ -16,6 +16,24 @@
       "revId": "beca6d3c6c65f986b82a6d87e61cd800e6e617b2",
       "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAAT3//+cQ\u003d",
+        "filename": "hivemind/packaging.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2014-04-08T02:00:35Z",
+      "side": 1,
+      "message": "Yeah, and I might as well merge this with uploadpackage if I do that. I\u0027ll push up another review.",
+      "parentUuid": "AAAAT3//+dw\u003d",
+      "revId": "beca6d3c6c65f986b82a6d87e61cd800e6e617b2",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
     }
   ]
 }
