@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "AAAAT3//+dw\u003d",
+        "filename": "hivemind/packaging.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1000084
+      },
+      "writtenOn": "2014-04-08T00:46:42Z",
+      "side": 1,
+      "message": "should this have a force option instead of removing the package each time?",
+      "revId": "beca6d3c6c65f986b82a6d87e61cd800e6e617b2",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
