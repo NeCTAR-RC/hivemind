@@ -24,6 +24,8 @@ setup(name='hivemind',
           "lxml",
           'python-novaclient',
           "cssselect",
+          "python-debian",
+          "chardet",   # from python-debian
       ],
       test_requires=[
           # -*- Extra requirements: -*-

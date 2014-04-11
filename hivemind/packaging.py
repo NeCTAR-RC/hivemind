@@ -11,6 +11,7 @@ import email
 import os
 import re
 
+from debian import deb822
 from fabric.api import task, local, hosts, run, execute
 
 from hivemind import git
@@ -92,11 +93,21 @@ def dpkg_parsechangelog():
     return email.message_from_string(res)
 
 
-def package_changes(source_package):
-    return "{0}_{1}_{2}.changes".format(
+def package_filepath(source_package, extension):
+    return "{0}/{1}_{2}_{3}.{4}".format(
+        pbuilder.package_export_dir(),
         source_package["Source"],
         version_without_epoc(source_package["Version"]),
-        ARCH)
+        ARCH,
+        extension)
+
+
+def changes_filepath(source_package):
+    return package_filepath(source_package, 'changes')
+
+
+def upload_filepath(source_package):
+    return package_filepath(source_package, 'upload')
 
 
 def pbuilder_buildpackage(release):
@@ -114,9 +125,20 @@ def git_buildpackage(current_branch, upstream_tree, release):
 @task
 @verbose
 @hosts("repo@mirrors.melbourne.nectar.org.au")
-def uploadpackage(package):
+def uploadpackage(changes, delete_existing=False):
     """Upload a package to the repository, using the changes file."""
-    local("dupload {0}".format(package))
+    if delete_existing:
+        data = open(changes).read()
+        source_package = deb822.Changes(data)
+        # Delete .upload file so dupload always refreshes the files.
+        upload = upload_filepath(source_package)
+        local("rm -f {0}".format(upload))
+    local("dupload {0}".format(changes))
+    if delete_existing:
+        # Remove previous package from repository.
+        distribution = "{0}-testing".format(source_package["Distribution"])
+        execute(reprepro.rm_packages, distribution, source_package["Source"])
+    # Import new packages into repository.
     run("import-new-debs.sh")
 
 
@@ -161,10 +183,9 @@ def buildpackage(release=None, upload=True):
         # Regenerate the source package information since it's changed
         # since we updated the changelog.
         source_package = dpkg_parsechangelog()
-        changes = package_changes(source_package)
+        changes = changes_filepath(source_package)
     if upload:
-        execute(uploadpackage, "{0}/{1}".format(pbuilder.package_export_dir(),
-                                                changes))
+        execute(uploadpackage, changes)
 
 
 @task
@@ -181,13 +202,12 @@ def buildbackport(release=None, revision=1, upload=True):
         local("dch -v {0} -D precise-{1} --force-distribution 'Backported'"
               .format(release_version, release))
     pbuilder_buildpackage(release=release)
-    # Regenerate the source package information since it's changed
-    # since we updated the changelog.
-    source_package = dpkg_parsechangelog()
-    changes = package_changes(source_package)
     if upload:
-        execute(uploadpackage, "{0}/{1}".format(pbuilder.package_export_dir(),
-                                                changes))
+        # Regenerate the source package information since it's changed
+        # since we updated the changelog.
+        source_package = dpkg_parsechangelog()
+        changes = changes_filepath(source_package)
+        execute(uploadpackage, changes)
 
 
 @task
