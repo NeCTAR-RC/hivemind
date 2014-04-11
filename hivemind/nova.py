@@ -1,10 +1,23 @@
 import os
+import sys
+import time
 
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from fabric.api import task
 from novaclient import client as nova_client
 
-from decorators import only_for
-from operations import run
-from util import current_host
+from hivemind.decorators import verbose, only_for
+from hivemind.operations import run
+from hivemind.util import current_host
+
+DEFAULT_AZ = 'melbourne-qh2'
+DEFAULT_SECURITY_GROUPS = 'default,openstack-node,puppet-client'
+
+FILE_TYPES = {
+    'cloud-config': '#cloud-config',
+    'x-shellscript': '#!',
+}
 
 
 def client():
@@ -52,3 +65,88 @@ def enable_host_services(host=None):
     for service in host_services(host):
         run("nova-manage service enable --host %s --service %s" %
             (service["host"], service["binary"]))
+
+
+def get_flavor_id(client, flavor_name):
+    flavors = client.flavors.list()
+    for flavor in flavors:
+        if flavor.name == flavor_name:
+            return flavor.id
+    raise Exception("Can't find flavor %s" % flavor_name)
+
+
+def wait_for(func, error_message):
+    for i in xrange(60):
+        ret = func()
+        if ret:
+            return ret
+        time.sleep(1)
+    raise Exception(error_message)
+
+
+def server_address(client, id):
+    server = client.servers.get(id)
+    if not server.addresses:
+        return None
+    for name, addresses in server.addresses.items():
+        for address in addresses:
+            if address.get('addr'):
+                return address['addr']
+
+
+def combine_files(*files):
+    combined_message = MIMEMultipart()
+    for filename in files:
+        with open(filename) as fh:
+            contents = fh.read()
+        for content_type, start in FILE_TYPES.items():
+            if contents.startswith(start):
+                break
+        else:
+            raise Exception("Can't find handler for '%s'" %
+                            contents.split('\n', 1)[0])
+
+        sub_message = MIMEText(contents, content_type,
+                               sys.getdefaultencoding())
+        sub_message.add_header('Content-Disposition',
+                               'attachment; filename="%s"' % (filename))
+        combined_message.attach(sub_message)
+    return combined_message
+
+
+@task
+@verbose
+def boot(name, key_name, image_id=None, flavor='m1.small',
+         security_groups=DEFAULT_SECURITY_GROUPS,
+         userdata=[], availability_zone=DEFAULT_AZ):
+    """Boot a new server.
+
+       :param str name: The name you want to give the VM.
+       :param str keyname: Key name of keypair that should be used.
+       :param str flavor: Name or ID of flavor,
+       :param str security_groups: Comma separated list of security
+         group names.
+       :param list userdata: User data file to pass to be exposed by
+         the metadata server.
+       :param str availability_zone: The availability zone for
+         instance placement.
+       :param choices ubuntu: The version of ubuntu you would like to use.
+
+    """
+    nova = client()
+
+    flavor_id = get_flavor_id(nova, flavor)
+
+    resp = nova.servers.create(name=name,
+                               flavor=flavor_id,
+                               security_groups=security_groups.split(','),
+                               userdata=str(combine_files(*userdata)),
+                               image=image_id,
+                               availability_zone=availability_zone,
+                               key_name=key_name)
+
+    server_id = resp.id
+    ip_address = wait_for(lambda: server_address(nova, resp.id),
+                          "Server never got an IP address.")
+    print server_id
+    print ip_address
