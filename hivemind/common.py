@@ -6,9 +6,12 @@ import inspect
 import pkg_resources
 import pkgutil
 import re
+from StringIO import StringIO
 import sys
 import os
 
+from docutils import writers, nodes, io
+from docutils.core import Publisher
 import fabric.main
 import fabric.state
 import fabric.utils
@@ -17,6 +20,56 @@ from fabric.api import task as fabric_task
 
 
 CONF = ConfigParser.ConfigParser()
+
+
+class DocStringTranslator(nodes.GenericNodeVisitor):
+    current_field = None
+
+    def __init__(self, document):
+        nodes.NodeVisitor.__init__(self, document)
+        self.fields = {}
+        self.docstring = StringIO()
+
+    def default_visit(self, node):
+        pass
+
+    def default_departure(self, node):
+        pass
+
+    def visit_paragraph(self, node):
+        if not self.current_field:
+            self.docstring.write(node.astext())
+
+    def visit_field(self, node):
+        self.current_field = node
+
+    def depart_field(self, node):
+        self.current_field = None
+
+    def visit_field_name(self, node):
+        self.current_field = node.astext().split(" ")
+
+    def visit_field_body(self, node):
+        self.fields[self.current_field[2]] = (self.current_field[1],
+                                              node.astext())
+
+
+class Writer(writers.Writer):
+    translator_class = DocStringTranslator
+
+    def translate(self):
+        self.visitor = visitor = self.translator_class(self.document)
+        self.document.walkabout(visitor)
+        self.output = (visitor.docstring, visitor.fields)
+
+
+def parse_docstring(doc):
+    p = Publisher(source=doc, source_class=io.StringInput)
+    p.set_reader('standalone', p.parser, 'restructuredtext')
+    p.writer = Writer()
+    p.process_programmatic_settings(None, None, None)
+    p.set_source(doc, None)
+    return p.publish()
 
 
 def _load_fabfile(path=None, importer=None):
@@ -191,7 +244,9 @@ def argname_to_option_flags(name):
 
 def register_subcommand(subparsers, name, function):
     """Register a new subcommand.  Return the subcommand parser."""
-    doc = function.__doc__ or ""
+    doc, fields_doc = parse_docstring(function.__doc__ or "")
+    doc.seek(0)
+    doc = doc.read()
     subcommand = subparsers.add_parser(name,
                                        help=doc,
                                        description=doc)
@@ -236,20 +291,42 @@ def register_subcommand(subparsers, name, function):
         else:
             kwargs['required'] = True
 
+        datatype, field_doc = fields_doc.get(arg, (None, ''))
+
         if default is True:
             del kwargs['default']
             narg = 'no_' + arg
             arg_mapping.append((narg, arg))
-            subcommand.add_argument(*args_to_options(narg, negative=True),
-                                    action='store_false', **kwargs)
+            subcommand.add_argument(
+                *args_to_options(narg, negative=True),
+                help=field_doc + " (default: %(default)s)",
+                action='store_false', **kwargs)
         elif default is False:
             arg_mapping.append((arg, arg))
-            subcommand.add_argument(*args_to_options(arg),
-                                    action='store_true', **kwargs)
+            subcommand.add_argument(
+                *args_to_options(arg),
+                help=field_doc + " (default: %(default)s)",
+                action='store_true', **kwargs)
+        elif isinstance(default, list):
+            arg_mapping.append((arg, arg))
+            # If choices then use the first value from the list as the
+            # default.
+            if datatype == 'choices':
+                kwargs['choices'] = kwargs['default']
+                kwargs['default'] = kwargs['default'][-1]
+                action = 'store'
+            else:
+                action = 'append'
+            subcommand.add_argument(
+                *args_to_options(arg), action=action,
+                help=field_doc + " (default: %(default)s)",
+                **kwargs)
         else:
             arg_mapping.append((arg, arg))
-            option = args_to_options(arg)
-            subcommand.add_argument(*option, action='store', **kwargs)
+            subcommand.add_argument(
+                *args_to_options(arg), action='store',
+                help=field_doc + " (default: %(default)s)",
+                **kwargs)
 
     subcommand.set_defaults(hivemind_arg_mapping=arg_mapping)
 
@@ -357,8 +434,9 @@ class HelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
 
 def main_plus():
-    parser = argparse.ArgumentParser(formatter_class=HelpFormatter,
-                                     conflict_handler='resolve')
+    parser = argparse.ArgumentParser(
+        formatter_class=HelpFormatter,
+        conflict_handler='resolve')
     parser.add_argument('-v', '--verbose', action='count')
     subparsers = parser.add_subparsers()
     env_options(parser)
