@@ -65,8 +65,9 @@ def package_export_dir():
 def pbuilder_env(os_release):
     dist = dist_from_release(os_release)
     dist_release = '{0}-{1}'.format(dist, os_release)
+    output_dir = os.path.join(package_export_dir(), dist_release)
     return shell_env(ARCH=ARCH, DIST=dist_release,
-                     GIT_PBUILDER_OUTPUT_DIR=package_export_dir())
+                     GIT_PBUILDER_OUTPUT_DIR=output_dir)
 
 
 @task
