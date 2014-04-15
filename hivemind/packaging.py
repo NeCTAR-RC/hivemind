@@ -95,8 +95,9 @@ def dpkg_parsechangelog():
 
 
 def package_filepath(source_package, extension):
-    return "{0}/{1}_{2}_{3}.{4}".format(
+    return "{0}/{1}/{2}_{3}_{4}.{5}".format(
         pbuilder.package_export_dir(),
+        source_package["Distribution"],
         source_package["Source"],
         version_without_epoc(source_package["Version"]),
         ARCH,
