@@ -19,9 +19,9 @@ def list(distribution):
 @task
 @verbose
 @hosts("repo@mirrors.melbourne.nectar.org.au")
-def ls(distribution):
+def ls(package):
     """List the package version across all distributions."""
-    reprepro("ls {0}".format(distribution))
+    reprepro("ls {0}".format(package))
 
 
 @task
