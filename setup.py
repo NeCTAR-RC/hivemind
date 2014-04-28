@@ -26,6 +26,7 @@ setup(name='hivemind',
           "cssselect",
           "python-debian",
           "chardet",   # from python-debian
+          "cmd2",
       ],
       test_requires=[
           # -*- Extra requirements: -*-
