@@ -18,7 +18,7 @@ from hivemind import git
 from hivemind import pbuilder
 from hivemind.decorators import verbose
 from hivemind.pbuilder import OPENSTACK_RELEASES, STABLE_RELEASE, ARCH, DIST
-from hivemind import reprepro
+from hivemind import repo
 
 
 def debian_branch(version):
@@ -137,7 +137,7 @@ def uploadpackage(changes, delete_existing=False):
     if delete_existing:
         # Remove previous package from repository.
         distribution = "{0}-testing".format(source_package["Distribution"])
-        execute(reprepro.rm_packages, distribution, source_package["Source"])
+        execute(repo.rm_packages, distribution, source_package["Source"])
     # Import new packages into repository.
     run("import-new-debs.sh")
 
@@ -213,7 +213,7 @@ def buildbackport(release=None, revision=1, upload=True):
 @task
 @verbose
 def promote(package_name, release='%s-%s' % (DIST, STABLE_RELEASE)):
-    execute(reprepro.cp_package, package_name, release + '-testing', release)
+    execute(repo.cp_package, package_name, release + '-testing', release)
 
 
 @task
