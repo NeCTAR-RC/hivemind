@@ -233,8 +233,6 @@ def register_subcommand(subparsers, name, function):
             kwargs['default'] = conf.get(arg)
         elif not isinstance(default, Nothing):
             kwargs['default'] = default
-        else:
-            kwargs['required'] = True
 
         if default is True:
             del kwargs['default']
@@ -248,7 +246,10 @@ def register_subcommand(subparsers, name, function):
                                     action='store_true', **kwargs)
         else:
             arg_mapping.append((arg, arg))
-            option = args_to_options(arg)
+            if 'default' in kwargs:
+                option = args_to_options(arg)
+            else:
+                option = (arg,)
             subcommand.add_argument(*option, action='store', **kwargs)
 
     subcommand.set_defaults(hivemind_arg_mapping=arg_mapping)
