@@ -242,7 +242,7 @@ def argname_to_option_flags(name):
     return (long_name,)
 
 
-def register_subcommand(subparsers, name, function):
+def register_subcommand(subparsers, name, function, config_prefix='cmd:'):
     """Register a new subcommand.  Return the subcommand parser."""
     doc, fields_doc = parse_docstring(function.__doc__ or "")
     doc.seek(0)
@@ -262,7 +262,7 @@ def register_subcommand(subparsers, name, function):
     defaults = ((Nothing(),) * (len(args.args) - len(args.defaults or tuple()))
                 + (args.defaults or tuple()))
 
-    conf = command_config(name)
+    conf = command_config(config_prefix + name)
     used_short_args = set()
 
     def args_to_options(arg, negative=False):
@@ -389,9 +389,8 @@ def filter_commands(commands):
 
 
 def command_config(command_name):
-    conf_section = 'cmd:%s' % command_name
     try:
-        return dict(CONF.items(conf_section))
+        return dict(CONF.items(command_name))
     except Exception:
         return {}
 
@@ -403,6 +402,18 @@ def load_subcommands(mapping, parser, prefix=""):
             load_subcommands(value, parser, name)
         else:
             register_subcommand(parser, name, value)
+
+
+def load_aliases(parser, prefix=""):
+    for section in CONF.sections():
+        if not section.startswith('alias:'):
+            continue
+        name = section.split(':', 1)[1]
+        command = CONF.get(section, '@command')
+        commands = fabric.state.commands
+        for cmd_segment in command.split('.'):
+            commands = commands[cmd_segment]
+        register_subcommand(parser, name, commands, config_prefix='alias:')
 
 
 def func_args(function):
@@ -417,6 +428,23 @@ def func_args(function):
 
 
 class HelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
+    def _metavar_formatter(self, action, default_metavar):
+        if action.metavar is not None:
+            result = action.metavar
+        elif action.choices is not None:
+            # NOTE return empty string to prevent printing all
+            # subcommands.
+            result = ''
+        else:
+            result = default_metavar
+
+        def format(tuple_size):
+            if isinstance(result, tuple):
+                return result
+            else:
+                return (result, ) * tuple_size
+        return format
+
     def _format_args(self, action, default_metavar):
         get_metavar = self._metavar_formatter(action, default_metavar)
         if action.nargs is None:
@@ -460,6 +488,8 @@ def state_init():
 
     # Register subcommands
     load_subcommands(fabric.state.commands, subparsers)
+
+    load_aliases(subparsers)
 
     return parser
 
