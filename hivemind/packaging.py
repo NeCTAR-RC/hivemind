@@ -232,5 +232,8 @@ def create_deb_branch(branch_name, source_debian_dir):
     local("rm .git/index")
     local("git clean -fdx")
     local("cp -r {0} debian".format(source_debian_dir))
+    local("""sed -i "/export DH_VERBOSE/ a\
+             export OSLO_PACKAGE_VERSION=\$(shell dpkg-parsechangelog """
+          """| sed -n -e 's/^Version: //p')" debian/rules""")
     local("git add debian")
     local('git commit -m "Initial import of debian package"')
