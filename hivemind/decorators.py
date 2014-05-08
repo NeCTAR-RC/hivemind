@@ -20,8 +20,7 @@ def only_for(*role_list):
         @wraps(func)
         def wrapper(*args, **kwargs):
             if _has_role(env.host_string, role_list):
-                func(*args, **kwargs)
-            return
+                return func(*args, **kwargs)
         return wrapper
     return _only_for
 
@@ -34,6 +33,5 @@ def verbose(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         with show('stdout', 'stderr'):
-            func(*args, **kwargs)
-            return
+            return func(*args, **kwargs)
     return wrapper
