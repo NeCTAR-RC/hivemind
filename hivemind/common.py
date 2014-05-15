@@ -315,6 +315,11 @@ def register_subcommand(subparsers, name, function):
                 action = 'store'
             else:
                 action = 'append'
+                # When loading default value, if it's as string
+                # convert it to a list.
+                if isinstance(kwargs['default'], (str, unicode)):
+                    kwargs['default'] = kwargs['default'].split(',')
+
             subcommand.add_argument(
                 *args_to_options(arg), action=action,
                 help=field_doc + " (default: %(default)s)",
