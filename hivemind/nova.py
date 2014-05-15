@@ -116,7 +116,7 @@ def combine_files(*files):
 
 @task
 @verbose
-def boot(name, key_name, image_id=None, flavor='m1.small',
+def boot(name, key_name=None, image_id=None, flavor='m1.small',
          security_groups=DEFAULT_SECURITY_GROUPS,
          userdata=[], availability_zone=DEFAULT_AZ):
     """Boot a new server.
