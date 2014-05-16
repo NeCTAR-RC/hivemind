@@ -116,9 +116,9 @@ def combine_files(*files):
 
 @task
 @verbose
-def boot(name, key_name, image_id=None, flavor='m1.small',
+def boot(name, key_name=None, image_id=None, flavor='m1.small',
          security_groups=DEFAULT_SECURITY_GROUPS,
-         userdata=[], availability_zone=DEFAULT_AZ):
+         networks=[], userdata=[], availability_zone=DEFAULT_AZ):
     """Boot a new server.
 
        :param str name: The name you want to give the VM.
@@ -128,6 +128,12 @@ def boot(name, key_name, image_id=None, flavor='m1.small',
          group names.
        :param list userdata: User data file to pass to be exposed by
          the metadata server.
+       :param list networks: A list of networks that the VM should
+         connect to. net-id: attach NIC to network with this UUID
+         (required if no port-id), v4-fixed-ip: IPv4 fixed address
+         for NIC (optional), port-id: attach NIC to port with this
+         UUID (required if no net-id).
+         (e.g. net-id=<net-uuid>;v4-fixed-ip=<ip-addr>;port-id=<port-uuid>,...)
        :param str availability_zone: The availability zone for
          instance placement.
        :param choices ubuntu: The version of ubuntu you would like to use.
@@ -137,11 +143,19 @@ def boot(name, key_name, image_id=None, flavor='m1.small',
 
     flavor_id = get_flavor_id(nova, flavor)
 
+    nics = []
+    for net in networks:
+        nics.append({})
+        for option in net.split(';'):
+            key, value = option.split('=')
+            nics[-1][key] = value
+
     resp = nova.servers.create(name=name,
                                flavor=flavor_id,
                                security_groups=security_groups.split(','),
                                userdata=str(combine_files(*userdata)),
                                image=image_id,
+                               nics=nics,
                                availability_zone=availability_zone,
                                key_name=key_name)
 
