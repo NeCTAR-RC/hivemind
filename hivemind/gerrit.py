@@ -98,3 +98,9 @@ def replicate(url=None):
     else:
         arg = '--url %s' % url
     cmd('replication start', arg)
+
+
+@task
+@verbose
+def sql():
+    cmd('gerrit gsql')
