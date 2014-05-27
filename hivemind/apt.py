@@ -5,11 +5,11 @@ from operations import run
 import util
 import nagios
 import puppet
-import nova
 
 
 package_upgrade = re.compile(r'   ([^\s]+) \(([^\s]+) => ([^\s]+)\)')
 package_install = re.compile(r'   ([^\s]+) \(([^\s]+)\)')
+
 
 @parallel(pool_size=20)
 def update():
@@ -29,7 +29,6 @@ def upgrade(packages=[]):
 
     # Disable services
     puppet.disable_agent(outage)
-    nova.disable_host_services()
 
     # Do upgrade
     with shell_env(DEBIAN_FRONTEND='noninteractive'):
@@ -39,7 +38,6 @@ def upgrade(packages=[]):
     # Enable services
     if puppet.is_disabled() == outage:
         puppet.enable_agent()
-    nova.enable_host_services()
     nagios.cancel_host_maintenance(outage)
 
 
