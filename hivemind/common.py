@@ -2,7 +2,6 @@ from collections import defaultdict
 import ConfigParser
 from os import path
 import argparse
-import inspect
 import pkg_resources
 import pkgutil
 import re
@@ -18,6 +17,7 @@ import fabric.utils
 from fabric.api import env, puts, output, execute
 from fabric.api import task as fabric_task
 
+import util
 
 CONF = ConfigParser.ConfigParser()
 
@@ -251,7 +251,7 @@ def register_subcommand(subparsers, name, function):
     subcommand = subparsers.add_parser(name,
                                        help=doc,
                                        description=doc)
-    args = func_args(function)
+    args = util.func_args(function)
 
     # Add the arguments and the function for extraction later.
     subcommand.set_defaults(hivemind_func=function)
@@ -427,17 +427,6 @@ def load_subcommands(commands, parser, prefix=""):
         register_subcommand(parser, command, func)
 
 
-def func_args(function):
-    "Dig through the decorator wrappers to find the real function arguments."
-    func = function
-    while func.func_closure or hasattr(func, 'wrapped'):
-        if hasattr(func, 'wrapped'):
-            func = func.wrapped
-            continue
-        func = func.func_closure[0].cell_contents
-    return inspect.getargspec(func)
-
-
 class HelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
     def _metavar_formatter(self, action, default_metavar):
         if action.metavar is not None:
@@ -543,7 +532,7 @@ def list_commands():
 def list_arguments(cmd):
     namespace, command = cmd.split('.')
     command = fabric.state.commands[namespace][command]
-    argspec = func_args(command)
+    argspec = util.func_args(command)
     return argspec.args
 
 
