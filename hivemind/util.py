@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+import inspect
 import os
 import socket
 
@@ -22,3 +23,14 @@ def current_host():
 def hide_and_ignore():
     with api.hide('everything'), api.settings(warn_only=True):
         yield
+
+
+def func_args(function):
+    "Dig through the decorator wrappers to find the real function arguments."
+    func = function
+    while func.func_closure or hasattr(func, 'wrapped'):
+        if hasattr(func, 'wrapped'):
+            func = func.wrapped
+            continue
+        func = func.func_closure[0].cell_contents
+    return inspect.getargspec(func)
