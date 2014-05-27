@@ -2,12 +2,14 @@ from collections import defaultdict
 import ConfigParser
 from os import path
 import argparse
+import pdb
 import pkg_resources
 import pkgutil
 import re
 from StringIO import StringIO
 import sys
 import os
+import traceback
 
 from docutils import writers, nodes, io
 from docutils.core import Publisher
@@ -201,6 +203,13 @@ def env_options(parser):
         action='store',
         metavar='TENANT',
         help="UUID of tenant to operate on."
+    )
+
+    parser.add_argument(
+        '--pdb',
+        default=False,
+        action='store_true',
+        help="Drop to pdb on error."
     )
 
 
@@ -538,5 +547,13 @@ def list_arguments(cmd):
 
 def main_plus():
     from hivemind import shell
-    parser = state_init()
-    shell.shell(parser)
+    try:
+        parser = state_init()
+        shell.shell(parser)
+    except:
+        if '--pdb' in sys.argv:
+            type, value, tb = sys.exc_info()
+            traceback.print_exc()
+            pdb.post_mortem(tb)
+        else:
+            raise
