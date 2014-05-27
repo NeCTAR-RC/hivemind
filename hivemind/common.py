@@ -244,9 +244,10 @@ def argname_to_option_flags(name):
 
 def register_subcommand(subparsers, name, function):
     """Register a new subcommand.  Return the subcommand parser."""
+    conf = command_config(name)
     doc, fields_doc = parse_docstring(function.__doc__ or "")
     doc.seek(0)
-    doc = doc.read()
+    doc = conf.get('@doc', doc.read())
     subcommand = subparsers.add_parser(name,
                                        help=doc,
                                        description=doc)
@@ -262,7 +263,6 @@ def register_subcommand(subparsers, name, function):
     defaults = ((Nothing(),) * (len(args.args) - len(args.defaults or tuple()))
                 + (args.defaults or tuple()))
 
-    conf = command_config(name)
     used_short_args = set()
 
     def args_to_options(arg, negative=False):
