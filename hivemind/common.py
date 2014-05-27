@@ -2,6 +2,7 @@ from collections import defaultdict
 import ConfigParser
 from os import path
 import argparse
+import importlib
 import pdb
 import pkg_resources
 import pkgutil
@@ -76,9 +77,18 @@ def parse_docstring(doc):
 
 def _load_fabfile(path=None, importer=None):
     all_tasks = defaultdict(dict)
-    for entrypoint in pkg_resources.iter_entry_points(group='hivemind.packages'):
+
+    for entrypoint in pkg_resources.iter_entry_points(
+            group='hivemind.packages'):
         plugin = entrypoint.load()
         tasks = _load_package_tasks(plugin, entrypoint.name)
+        for k, v in tasks.items():
+            all_tasks[k].update(v)
+
+    for entrypoint in pkg_resources.iter_entry_points(
+            group='hivemind.modules'):
+        plugin = entrypoint.load()
+        tasks = _load_package_or_module_tasks(plugin, entrypoint.name)
         for k, v in tasks.items():
             all_tasks[k].update(v)
 
@@ -99,18 +109,19 @@ def _load_package_tasks(package, universe):
         if re.search(r'.*\.tests.*', modname):
             continue
         module = importer.find_module(modname)
-        module = __import__(modname)
-        tasks = _load_module_tasks(module, universe)
-        for k, v in tasks.items():
-            all_tasks[k].update(v)
+        if module:
+            importlib.import_module(modname)
+    tasks = _load_package_or_module_tasks(package, universe)
+    for k, v in tasks.items():
+        all_tasks[k].update(v)
     return all_tasks
 
 
-def _load_module_tasks(module, default_universe):
+def _load_package_or_module_tasks(module, default_universe):
     # It's defaultdicts all the way down...
     all_tasks = defaultdict(lambda: defaultdict(dict))
 
-    def update_task(namespace, name, task):
+    def update_package_task(namespace, name, task):
         try:
             # Maybe override the default namespace
             ns = task._hivemind['namespace']
@@ -118,12 +129,20 @@ def _load_module_tasks(module, default_universe):
             ns = namespace
         all_tasks[default_universe][ns].update({name: task})
 
+    def update_module_task(name, task):
+        all_tasks[default_universe].update({name: task})
+
     def update_namespace(namespace, tasks):
-        for name, task in tasks.items():
-            if isinstance(task, dict):
-                update_namespace(name, task)
-            else:
-                update_task(namespace, name, task)
+        if isinstance(tasks, dict):
+            for name, task in tasks.items():
+                if isinstance(task, dict):
+                    update_namespace(name, task)
+                else:
+                    # Only include tasks from this namespace.
+                    if task.__module__.startswith(module.__name__):
+                        update_package_task(namespace, name, task)
+        else:
+            update_module_task(namespace, tasks)
 
     module_tasks = fabric.main.extract_tasks(vars(module).items())[0]
     for namespace, tasks in module_tasks.items():
