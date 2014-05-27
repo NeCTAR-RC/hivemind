@@ -1,5 +1,7 @@
 from functools import wraps
 from fabric.api import env, show
+from common import CONF
+import util
 
 
 def _has_role(host, roles):
@@ -35,3 +37,47 @@ def verbose(func):
         with show('stdout', 'stderr'):
             return func(*args, **kwargs)
     return wrapper
+
+
+def conf_section(module, name):
+    return 'cfg:%s.%s' % (module, name)
+
+
+def func_config(section):
+    try:
+        return dict(CONF.items(section))
+    except Exception:
+        return {}
+
+
+def configurable(name):
+    """Decorator that makes all options for the function configurable
+    within the settings file.
+
+       :param str name: The name given to the config section
+
+    """
+    def _configurable(func):
+        conf_name = conf_section(func.__module__, name)
+        conf = func_config(conf_name)
+        args_list = util.func_args(func)
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            filtered_defaults = dict((a, conf.get(a))
+                                     for a in args_list.args if a in conf)
+            arguments = dict(zip(reversed(args_list.args),
+                                 args_list.defaults or []))
+            arguments.update(dict(zip(args_list.args, args)))
+            arguments.update(kwargs)
+            arguments.update(filtered_defaults)
+            missing_args = [arg for arg in args_list.args
+                            if arg not in arguments]
+            if missing_args:
+                raise Exception(
+                    'Configuration section %s is missing values for %s' %
+                    (conf_name, missing_args))
+
+            return func(**arguments)
+        return wrapper
+    return _configurable
