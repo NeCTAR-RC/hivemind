@@ -311,7 +311,7 @@ def register_subcommand(subparsers, name, function):
             # default.
             if datatype == 'choices':
                 kwargs['choices'] = kwargs['default']
-                kwargs['default'] = kwargs['default'][-1]
+                kwargs['default'] = kwargs['default'][0]
                 action = 'store'
             else:
                 action = 'append'
