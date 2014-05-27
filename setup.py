@@ -23,7 +23,6 @@ setup(name='hivemind',
           "requests",
           "lxml",
           "docutils",
-          'python-novaclient',
           "cssselect",
           "python-debian",
           "chardet",   # from python-debian
