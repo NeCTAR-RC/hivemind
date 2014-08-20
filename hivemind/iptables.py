@@ -74,11 +74,13 @@ def vm_rules():
 
 @task
 @hosts('cell1.rc.nectar.org.au')
-def sync_vm_rules():
+def sync_vm_rules(project_id=None):
     """Sync security groups for the given instance UUID (-I)"""
-    if not env.instance_uuid:
-        error("No instance_uuid specified.")
-    uuid = env.instance_uuid
-    nova_client = client()
-    server = nova_client.servers.get(uuid)
-    run('nova-manage project sync_secgroups %s' % server.tenant_id)
+    if not env.instance_uuid and project_id is None:
+        error("No instance ID or project specified.")
+    if env.instance_uuid:
+        uuid = env.instance_uuid
+        nova_client = client()
+        server = nova_client.servers.get(uuid)
+        project_id = server.tenant_id
+    run('nova-manage project sync_secgroups %s' % project_id)
