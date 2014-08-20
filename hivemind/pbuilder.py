@@ -11,7 +11,7 @@ from hivemind.decorators import verbose
 
 ARCH = "amd64"
 
-STABLE_RELEASE = "havana"
+STABLE_RELEASE = "icehouse"
 OPENSTACK_RELEASES = ['icehouse', 'havana', 'grizzly']
 
 
