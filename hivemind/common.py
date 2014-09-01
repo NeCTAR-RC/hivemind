@@ -186,7 +186,7 @@ def env_options(parser):
 
     parser.add_argument(
         '-R', '--roles',
-        default=[],
+        default=os.environ.get('ROLES', []),
         action='append',
         metavar='ROLE',
         help='a role to operate on.'
@@ -194,7 +194,7 @@ def env_options(parser):
 
     parser.add_argument(
         '-H', '--hosts',
-        default=[],
+        default=os.environ.get('HOSTS', []),
         action='append',
         metavar='HOST',
         help="host to operate on."
@@ -202,7 +202,7 @@ def env_options(parser):
 
     parser.add_argument(
         '-X', '--exclude-hosts',
-        default=[],
+        default=os.environ.get('EXCLUDED_HOSTS', []),
         action='append',
         metavar='HOST',
         help="host to exclude."
@@ -210,7 +210,7 @@ def env_options(parser):
 
     parser.add_argument(
         '-I', '--instance-uuid',
-        default=None,
+        default=os.environ.get('INSTANCE_UUID', None),
         action='store',
         metavar='INSTANCE',
         help="UUID of instance to operate on."
@@ -218,7 +218,7 @@ def env_options(parser):
 
     parser.add_argument(
         '-T', '--tenant-uuid',
-        default=None,
+        default=os.environ.get('TENANT_UUID', None),
         action='store',
         metavar='TENANT',
         help="UUID of tenant to operate on."
