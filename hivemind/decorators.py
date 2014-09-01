@@ -58,7 +58,11 @@ def configurable(name):
 
     """
     def _configurable(func):
-        conf_name = conf_section(func.__module__, name)
+        # If there is a . assume that the name is fully qualified.
+        if '.' in name:
+            conf_name = conf_section(*name.split('.', 1))
+        else:
+            conf_name = conf_section(func.__module__, name)
         conf = func_config(conf_name)
         args_list = util.func_args(func)
 
