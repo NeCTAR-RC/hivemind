@@ -1,15 +1,15 @@
+from StringIO import StringIO
 from collections import defaultdict
-import ConfigParser
 from os import path
+import ConfigParser
 import argparse
 import importlib
+import os
 import pdb
 import pkg_resources
 import pkgutil
 import re
-from StringIO import StringIO
 import sys
-import os
 import traceback
 
 from docutils import writers, nodes, io
@@ -443,16 +443,25 @@ def load_subcommands(commands, parser, prefix=""):
     for command in commands:
         config = command_config(command)
         if '@command' in config:
+            alias = True
             function_path = config['@command']
         else:
+            alias = False
             function_path = command
 
         functions = fabric.state.commands
         for cmd_segment in function_path.split('.'):
-            functions = functions[cmd_segment]
-        func = functions
-
-        register_subcommand(parser, command, func)
+            try:
+                functions = functions[cmd_segment]
+            except:
+                if alias:
+                    print >> sys.stderr, "FAILED to find command for alias %s" % command
+                else:
+                    print >> sys.stderr, "FAILED unknown command %s in ini" % command
+                functions = None
+                break
+        if functions:
+            register_subcommand(parser, command, functions)
 
 
 class HelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
