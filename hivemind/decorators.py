@@ -71,7 +71,7 @@ def configurable(name):
             filtered_defaults = dict((a, conf.get(a))
                                      for a in args_list.args if a in conf)
             arguments = dict(zip(reversed(args_list.args),
-                                 args_list.defaults or []))
+                                 reversed(args_list.defaults) or []))
             arguments.update(dict(zip(args_list.args, args)))
             arguments.update(kwargs)
             arguments.update(filtered_defaults)
