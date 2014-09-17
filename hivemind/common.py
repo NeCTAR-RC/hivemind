@@ -379,7 +379,8 @@ def load_rc(program_name):
     - config.py
     """
 
-    filename = path.expanduser(path.join("~", ".hivemind", program_name))
+    hivemind_config_dir = path.expanduser(path.join("~", ".hivemind"))
+    filename = path.join(hivemind_config_dir, program_name)
     if not path.exists(filename):
         os.makedirs(filename)
 
@@ -392,7 +393,16 @@ def load_rc(program_name):
 
     py_filename = path.join(filename, "config.py")
     if path.exists(py_filename):
-        execfile(py_filename, globals())
+        sys.path.append(hivemind_config_dir)
+        try:
+            config = importlib.import_module('%s.%s' % (program_name, 'config'))
+        except ImportError:
+            execfile(py_filename, globals())
+        try:
+            config.configure(name=program_name)
+        except Exception:
+            pass
+        sys.path.remove(hivemind_config_dir)
     else:
         # TODO make template
         open(py_filename, 'a').close()
