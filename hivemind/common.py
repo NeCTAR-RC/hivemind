@@ -291,7 +291,7 @@ def register_subcommand(subparsers, name, function):
     defaults = ((Nothing(),) * (len(args.args) - len(args.defaults or tuple()))
                 + (args.defaults or tuple()))
 
-    used_short_args = set()
+    used_short_args = set(['-h'])
 
     def args_to_options(arg, negative=False):
         options = argname_to_option_flags(arg)
