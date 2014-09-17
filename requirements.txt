@@ -1,4 +1,4 @@
-flake8
+pbr
 mox
-nose
+pytest
 mock
