@@ -14,9 +14,9 @@ class Shell(cmd.Cmd, object):
         super(Shell, self).__init__(*args, **kwargs)
         self.hivemind = hivemind
         self.prompt = '%s> ' % os.path.basename(sys.argv[0])
-        for cmd in hivemind.command_list():
-            setattr(self.__class__, 'do_%s' % cmd, self._make_cmd(cmd))
-            setattr(self.__class__, 'complete_%s' % cmd.split('.')[0],
+        for command in hivemind.command_list():
+            setattr(self.__class__, 'do_%s' % command, self._make_cmd(command))
+            setattr(self.__class__, 'complete_%s' % command.split('.')[0],
                     self._make_complete())
 
     @staticmethod
@@ -32,6 +32,7 @@ class Shell(cmd.Cmd, object):
         def handler(self, text, line, begidx, endidx):
             name = line.split()[0]
             args = self.hivemind.argument_list(name)
+
             def filter_args(arg):
                 return arg.startswith(text) and arg not in line
             comps = filter(filter_args, args)

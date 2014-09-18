@@ -13,7 +13,7 @@ package_install = re.compile(r'   ([^\s]+) \(([^\s]+)\)')
 
 @parallel(pool_size=20)
 def update():
-    #update to get latest list
+    # update to get latest list
     return run("apt-get update")
 
 
