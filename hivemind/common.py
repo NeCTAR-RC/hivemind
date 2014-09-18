@@ -465,9 +465,11 @@ def load_subcommands(commands, parser, prefix=""):
                 functions = functions[cmd_segment]
             except:
                 if alias:
-                    print >> sys.stderr, "FAILED to find command for alias %s" % command
+                    print >> sys.stderr, "FAILED to find command for alias %s"\
+                        % command
                 else:
-                    print >> sys.stderr, "FAILED unknown command %s in ini" % command
+                    print >> sys.stderr, "FAILED unknown command %s in ini"\
+                        % command
                 functions = None
                 break
         if functions:
