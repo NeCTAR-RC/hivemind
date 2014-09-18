@@ -36,12 +36,14 @@ def root_dir():
 
 def current_branch():
     with hide("everything"):
-        return local("git rev-parse --symbolic-full-name --abbrev-ref HEAD", capture=True)
+        return local("git rev-parse --symbolic-full-name --abbrev-ref HEAD",
+                     capture=True)
 
 
 def branch_exists(branch_name):
     with util.hide_and_ignore():
-        result = local("git show-ref --verify --quiet refs/heads/{0}".format(branch_name))
+        result = local("git show-ref --verify --quiet refs/heads/{0}"
+                       .format(branch_name))
         return result.succeeded
 
 
@@ -58,7 +60,8 @@ class temporary_merge():
         try:
             assert_clean_repository()
         except:
-            abort("ERROR: Can't do a clean merge with {0}.".format(self.branch))
+            abort("ERROR: Can't do a clean merge with {0}."
+                  .format(self.branch))
         return self
 
     def __exit__(self, type, value, traceback):
