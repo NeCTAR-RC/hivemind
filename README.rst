@@ -9,7 +9,7 @@ Install
 
 You need the following packages ::
 
-  sudo apt-get install python-dev libxml2-dev libxslt-dev lib32z1-dev
+  sudo apt-get install python-dev libxml2-dev libxslt-dev lib32z1-dev python-tox
 
 You probably want a source install so run ::
 
