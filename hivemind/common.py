@@ -370,7 +370,7 @@ def register_subcommand(subparsers, name, function):
     return subcommand
 
 
-def load_rc(program_name):
+def load_rc(prog_name):
     """Load the users configuration file.
     Files are expected to exist in ~/.hivemind/(progname)/
 
@@ -380,7 +380,7 @@ def load_rc(program_name):
     """
 
     hivemind_config_dir = path.expanduser(path.join("~", ".hivemind"))
-    filename = path.join(hivemind_config_dir, program_name)
+    filename = path.join(hivemind_config_dir, prog_name)
     if not path.exists(filename):
         os.makedirs(filename)
 
@@ -395,11 +395,11 @@ def load_rc(program_name):
     if path.exists(py_filename):
         sys.path.append(hivemind_config_dir)
         try:
-            config = importlib.import_module('%s.%s' % (program_name, 'config'))
+            config = importlib.import_module('%s.%s' % (prog_name, 'config'))
         except ImportError:
             execfile(py_filename, globals())
         try:
-            config.configure(name=program_name)
+            config.configure(name=prog_name)
         except Exception:
             pass
         sys.path.remove(hivemind_config_dir)
