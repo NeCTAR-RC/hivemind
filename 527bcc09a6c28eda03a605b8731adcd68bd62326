@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_3f03edb9",
+        "filename": "README.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1000105
+      },
+      "writtenOn": "2015-08-03T05:17:30Z",
+      "side": 1,
+      "message": "needs more hyphens to be a valid ReStructuredText title\n-------------------------------------------------------\n\n\"An underline/overline is a single repeated punctuation character that begins in column 1 and forms a line extending at least as far as the right edge of the title text.\"",
+      "revId": "527bcc09a6c28eda03a605b8731adcd68bd62326",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_bf26bd66",
+        "filename": "README.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1000105
+      },
+      "writtenOn": "2015-08-03T05:17:30Z",
+      "side": 1,
+      "message": "You don\u0027t want sudo if you are installing into a virtual environment, we should probably cover this case.",
+      "revId": "527bcc09a6c28eda03a605b8731adcd68bd62326",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
