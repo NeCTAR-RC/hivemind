@@ -16,3 +16,5 @@ You probably want a source install so run ::
   git clone git@github.com:NeCTAR-RC/hivemind.git
   cd hivemind
   pip install -e .
+
+Once that's done you will need to install https://github.com/NeCTAR-RC/hivemind_contrib
