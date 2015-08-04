@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_5f4fc192",
+        "filename": "README.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1000104
+      },
+      "writtenOn": "2015-08-04T06:18:56Z",
+      "side": 1,
+      "message": "sudo is not needed. use virtualenv instead? or just remove this change.",
+      "range": {
+        "startLine": 18,
+        "startChar": 2,
+        "endLine": 18,
+        "endChar": 6
+      },
+      "revId": "76ee3f9a3a2b020513e5f7a064e75775d5950028",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
