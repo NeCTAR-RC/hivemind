@@ -22,6 +22,30 @@
       "revId": "76ee3f9a3a2b020513e5f7a064e75775d5950028",
       "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_e2ab7ed4",
+        "filename": "README.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1000105
+      },
+      "writtenOn": "2015-08-05T00:49:35Z",
+      "side": 1,
+      "message": "I think the options can be summarised as follows:\n\n1)\ninstall with \u0027sudo pip\u0027 This will install the hivemind and its dependencies system-wide. Which is bad because (a) it could mean that any other python software on your system might find that the version of libraries it depends on has changed.\n\n2)\ninstall with pip without sudo. This will probably fail because it will attempt to install python packages into system locations.\n\n3)\nInstall with pip install --user, which will install it into\nyour user\u0027s system path. This should be good, except I have found that some packages don\u0027t install cleanly because of hardcoded paths. Not sure if hivemind and its dependencies fall into this category.\n\n4)\nUse a virtual environment, the nicest way seems to be using\nvirtualenvwrapper which is packaged in debian.\n\n5) There is a debian package for hivemind, and a separate one for hivemind_contrib. See https://jenkins.rc.nectar.org.au/job/hivemind-icehouse-deb-package/ and https://jenkins.rc.nectar.org.au/job/hivemind_contrib-icehouse-deb-package/ I don\u0027t know much about these otions because I am a Fedora user. Also they will not help with local development of hivemind, only usage.",
+      "parentUuid": "9a245df4_5f4fc192",
+      "range": {
+        "startLine": 18,
+        "startChar": 2,
+        "endLine": 18,
+        "endChar": 6
+      },
+      "revId": "76ee3f9a3a2b020513e5f7a064e75775d5950028",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
     }
   ]
 }
