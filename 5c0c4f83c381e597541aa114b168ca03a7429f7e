@@ -1,0 +1,129 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a106d94_c7ee428b",
+        "filename": "README.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000105
+      },
+      "writtenOn": "2015-12-09T02:05:29Z",
+      "side": 1,
+      "message": "these should be filled out. I suggest `hivemind keystone.user_projects` as one of the example commands.",
+      "revId": "5c0c4f83c381e597541aa114b168ca03a7429f7e",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_a7cce636",
+        "filename": "README.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000105
+      },
+      "writtenOn": "2015-12-09T02:05:29Z",
+      "side": 1,
+      "message": "I think we should explain here that hivemind contains the core openstack and fabric integration, and hivemind_contrib contains specific tasks.",
+      "revId": "5c0c4f83c381e597541aa114b168ca03a7429f7e",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_07e97a80",
+        "filename": "README.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000105
+      },
+      "writtenOn": "2015-12-09T02:05:29Z",
+      "side": 1,
+      "message": ".\n\nLet\u0027s link to http://docs.python-guide.org/en/latest/dev/virtualenvs/  \nand mention that there are multiple ways to use virtual environments, this guide shows basic usage, and that virtualenvwrapper is another way of using it.",
+      "revId": "5c0c4f83c381e597541aa114b168ca03a7429f7e",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_87fc4a40",
+        "filename": "README.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1000105
+      },
+      "writtenOn": "2015-12-09T02:05:29Z",
+      "side": 1,
+      "message": "Should say why, ie: A source install will enable you to read the code and contribute.",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 34
+      },
+      "revId": "5c0c4f83c381e597541aa114b168ca03a7429f7e",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_67f94e4d",
+        "filename": "README.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000105
+      },
+      "writtenOn": "2015-12-09T02:05:29Z",
+      "side": 1,
+      "message": "running virtualenv will create a directory here, so you don\u0027t need to \u0027mkdir\u0027",
+      "revId": "5c0c4f83c381e597541aa114b168ca03a7429f7e",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_c7bc826f",
+        "filename": "README.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1000105
+      },
+      "writtenOn": "2015-12-09T02:05:29Z",
+      "side": 1,
+      "message": "merge / remove with the invocation section maybe?",
+      "revId": "5c0c4f83c381e597541aa114b168ca03a7429f7e",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_a7c186e6",
+        "filename": "README.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1000105
+      },
+      "writtenOn": "2015-12-09T02:05:29Z",
+      "side": 1,
+      "message": "move this up, should be the first command :) \nPerhaps mention that you should see a list of commands here, and this is a test that the installation worked correctly.",
+      "revId": "5c0c4f83c381e597541aa114b168ca03a7429f7e",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
