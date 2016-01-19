@@ -18,7 +18,7 @@ Install
 
 You need the following packages ::
 
-  sudo apt-get install python-dev libxml2-dev libxslt1-dev lib32z1-dev python-virtualenv
+  sudo apt-get install python-dev libxml2-dev libxslt1-dev lib32z1-dev python-virtualenv libmysqlclient-dev
 
 You probably want a source install so run ::
 
@@ -28,12 +28,12 @@ You probably want a source install so run ::
   virtualenv venv
   . venv/bin/activate
 
-  git clone git@github.com:NeCTAR-RC/hivemind.git
+  git clone https://github.com/NeCTAR-RC/hivemind.git
   cd hivemind
   pip install -e .
   cd ..
 
-  git clone git@github.com:NeCTAR-RC/hivemind_contrib.git
+  git clone https://github.com/NeCTAR-RC/hivemind_contrib.git
   cd hivemind_contrib
   pip install -e .
   cd ..
@@ -42,15 +42,15 @@ Invocation
 ----------
 You must activate the virtual environment in order for hivemind to work.
 
-  $ . ~/hivemind_all/venv/bin/activate
-  (venv)$ hivemind
-  hivemind>
+  $ . ~/hivemind_all/venv/bin/activate  
+  (venv)$ hivemind  
+  hivemind>  
 
 And when you are done with it, you should deactivate it;
 
-  hivemind> exit
-  (venv)$ deactivate
-  $
+  hivemind> exit  
+  (venv)$ deactivate  
+  $  
 
 Usage
 -----
