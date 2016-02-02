@@ -395,7 +395,8 @@ def load_rc(program_name):
     if path.exists(py_filename):
         sys.path.append(hivemind_config_dir)
         try:
-            config = importlib.import_module('%s.%s' % (program_name, 'config'))
+            config = importlib.import_module(
+                '%s.%s' % (program_name, 'config'))
         except ImportError:
             execfile(py_filename, globals())
         try:
