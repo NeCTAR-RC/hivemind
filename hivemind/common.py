@@ -288,8 +288,9 @@ def register_subcommand(subparsers, name, function):
         pass
 
     # Pad out the default list with None
-    defaults = ((Nothing(),) * (len(args.args) - len(args.defaults or tuple()))
-                + (args.defaults or tuple()))
+    defaults = ((
+        Nothing(),) * (len(args.args) - len(args.defaults or tuple())) +
+                (args.defaults or tuple()))
 
     used_short_args = set(['-h'])
 
