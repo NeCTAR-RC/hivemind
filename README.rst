@@ -3,8 +3,9 @@ Hivemind
 
 Hivemind is a collection of Fabric commands used members of the NeCTAR
 eResearch compute cloud.  It can be used to do fancy things like:
- * list users in a project from keystone
- * Build debian packages
+
+* list users in a project from keystone
+* Build debian packages
 
 
 Hivemind runs in python and a complete Hivemind install comprises two interdependent components;
