@@ -72,9 +72,10 @@ def configurable(name):
                                      for a in args_list.args if a in conf)
             arguments = dict(zip(reversed(args_list.args),
                                  reversed(args_list.defaults or [])))
-            arguments.update(dict(zip(args_list.args, args)))
             arguments.update(kwargs)
             arguments.update(filtered_defaults)
+            arguments.update(dict((k, v) for k, v in
+                             zip(args_list.args, args) if v))
             missing_args = [arg for arg in args_list.args
                             if arg not in arguments]
             if missing_args:
