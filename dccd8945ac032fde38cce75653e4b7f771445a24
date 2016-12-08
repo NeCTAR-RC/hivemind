@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7adec928_7f0c3943",
+        "filename": "README.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000088
+      },
+      "writtenOn": "2016-12-08T05:36:58Z",
+      "side": 1,
+      "message": "Should this be in the previous line? Might be confusing with the mysql vs mariadb comment.",
+      "range": {
+        "startLine": 28,
+        "startChar": 46,
+        "endLine": 29,
+        "endChar": 54
+      },
+      "revId": "dccd8945ac032fde38cce75653e4b7f771445a24",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
