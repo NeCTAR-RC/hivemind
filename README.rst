@@ -17,9 +17,16 @@ These two parts must be installed in the same python virtual environment
 Install
 -------
 
-You need the following packages ::
+You need the following Ubuntu packages ::
 
   sudo apt-get install python-dev libxml2-dev libxslt1-dev lib32z1-dev python-virtualenv libmysqlclient-dev
+
+For Fedora / CentOS / etcetera try this ::
+
+  sudo yum install python-devel libxml2-devel libxslt-devel zlib-devel python-virtualenv mysql-devel
+
+Or try mariadb-devel instead of mysql-devel.  On Fedora, you may also need
+to install redhat-rpm-config to get pycrypto to build.
 
 You probably want a source install so run ::
 
