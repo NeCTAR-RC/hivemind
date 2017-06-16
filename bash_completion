@@ -1,0 +1,19 @@
+COMPLETE=$(type -t _get_comp_words_by_ref 2>/dev/null)
+ if [ ! -x "$COMPLETE" ]; then
+  _hivemind ()
+  {
+    local cur prev name names
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev
+    case $prev in
+      hivemind)
+        COMPREPLY=( $( compgen -W "$(hivemind -h |awk '/^    [a-z]*\.[a-z]/{print $1}')" -- $cur ) )
+        ;;
+      *)
+        echo -ne "\n$(hivemind $prev -h)\n> hivemind $prev "
+        ;;
+    esac
+  }
+  complete -F _hivemind hivemind
+fi
+
