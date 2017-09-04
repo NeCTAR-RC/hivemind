@@ -17,6 +17,13 @@ def update():
     return run("apt-get update")
 
 
+@parallel(pool_size=20)
+def autoremove():
+    # update to get latest list
+    with shell_env(DEBIAN_FRONTEND='noninteractive'):
+        run("apt-get autoremove -y -o Dpkg::Options::='--force-confold'")
+
+
 @parallel(pool_size=10)
 def upgrade(packages=[]):
     outage = "Package Upgrade (%s@%s)." % (util.local_user(),
