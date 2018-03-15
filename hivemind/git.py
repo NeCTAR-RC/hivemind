@@ -8,7 +8,7 @@ def assert_in_repository():
     with hide("everything"):
         try:
             local("git rev-parse --git-dir")
-        except:
+        except Exception:
             abort("ERROR: Must be run from within a git repository.")
 
 
@@ -60,7 +60,7 @@ class temporary_merge():
             local("git merge -Xours --no-edit {0}".format(self.branch))
         try:
             assert_clean_repository()
-        except:
+        except Exception:
             abort("ERROR: Can't do a clean merge with {0}."
                   .format(self.branch))
         return self

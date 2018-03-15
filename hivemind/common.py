@@ -465,7 +465,7 @@ def load_subcommands(commands, parser, prefix=""):
         for cmd_segment in function_path.split('.'):
             try:
                 functions = functions[cmd_segment]
-            except:
+            except Exception:
                 if alias:
                     print >> sys.stderr, "FAILED to find command for alias %s"\
                         % command
@@ -592,7 +592,7 @@ def main_plus():
     try:
         parser = state_init()
         shell.shell(parser)
-    except:
+    except Exception:
         if '--pdb' in sys.argv:
             type, value, tb = sys.exc_info()
             traceback.print_exc()
