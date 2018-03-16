@@ -19,7 +19,7 @@ def run(command, shell=True, pty=True, combine_stderr=None, quiet=False,
                             stderr=stderr, timeout=timeout,
                             shell_escape=shell_escape)
 
-    except:
+    except Exception:
         puts("[%s] %s %s" % (env.host_string, command, red("failed")))
         if hasattr(stdout, "print_recent"):
             stdout.print_recent()
