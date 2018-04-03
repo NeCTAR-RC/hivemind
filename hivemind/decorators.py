@@ -1,6 +1,10 @@
 from functools import wraps
 from fabric.api import env, show
 from common import CONF
+import itertools
+import sys
+import threading
+import time
 import util
 
 
@@ -86,3 +90,32 @@ def configurable(name):
             return func(**arguments)
         return wrapper
     return _configurable
+
+
+# Spinner class as decorator to indicate the script is still running
+class Spinner(object):
+    spinner_cycle = itertools.cycle(['-', '/', '|', '\\'])
+
+    def __init__(self, func):
+        self.func = func
+
+    def __enter__(self):
+        self.stop_running = threading.Event()
+        self.spin_thread = threading.Thread(target=self.init_spin)
+        self.spin_thread.daemon = True
+        self.spin_thread.start()
+
+    def __exit__(self, type, value, traceback):
+        self.stop_running.set()
+        self.spin_thread.join()
+
+    def init_spin(self):
+        while not self.stop_running.is_set():
+            sys.stdout.write('\b' + self.spinner_cycle.next())
+            sys.stdout.flush()
+            time.sleep(0.25)
+
+    def __call__(self, *args, **kwargs):
+        with self:
+            res = self.func(*args, **kwargs)
+            return res
