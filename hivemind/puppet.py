@@ -1,7 +1,7 @@
 import json
 from operations import run
 
-LOCK_FILE = "/var/lib/puppet/state/agent_disabled.lock"
+LOCK_FILE = "/opt/puppetlabs/puppet/cache/state/agent_disabled.lock"
 
 
 def disable_agent(reason):
