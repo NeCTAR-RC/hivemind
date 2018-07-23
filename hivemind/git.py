@@ -1,6 +1,7 @@
 from fabric.api import puts, local, abort, hide
 from fabric.colors import green
 
+import re
 import util
 
 
@@ -20,10 +21,22 @@ def assert_clean_repository():
         abort("ERROR: This repository is dirty.")
 
 
+GIT_VERSION_REGEX = re.compile(
+    r"^git version ?(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)")
+
+
+def version():
+    with hide("everything"):
+        version_str = local("git version", capture=True)
+        version = GIT_VERSION_REGEX.search(version_str)
+        if not version:
+            raise Exception("Unable to parse version %s" % version_str)
+        return version.groupdict()
+
+
 def describe():
     with hide("everything"):
         return local("git describe --tags", capture=True)
-
 
 def head():
     with hide("everything"):
@@ -57,7 +70,11 @@ class temporary_merge():
     def __enter__(self):
         puts("Merging {0}".format(green(self.branch)))
         with hide("everything"):
-            local("git merge -Xours --no-edit {0}".format(self.branch))
+            version = version()
+            if version['major'] <= 2 and version['minor'] < 17:
+                local("git merge -Xours --no-edit {0}".format(self.branch))
+            else:
+                local("git merge -Xours --allow-unrelated-histories --no-edit {0}".format(self.branch))
         try:
             assert_clean_repository()
         except Exception:
