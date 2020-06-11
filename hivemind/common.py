@@ -225,6 +225,14 @@ def env_options(parser):
     )
 
     parser.add_argument(
+        '-G', '--gateway',
+        default=None,
+        action='store',
+        metavar='GATEWAY',
+        help="Gateway to use for SSH connections (format: user@hostname)"
+    )
+
+    parser.add_argument(
         '--pdb',
         default=False,
         action='store_true',
@@ -558,6 +566,7 @@ def execute_args(parser, argv=None):
     fabric.state.env['exclude_hosts'] = args.exclude_hosts
     fabric.state.env['instance_uuid'] = args.instance_uuid
     fabric.state.env['tenant_uuid'] = args.tenant_uuid
+    fabric.state.env['gateway'] = args.gateway
 
     if args.verbose > 0:
         output['everything'] = True
