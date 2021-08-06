@@ -24,7 +24,7 @@ setup(name='hivemind',
           "lxml",
           "docutils",
           "cssselect",
-          "python-debian",
+          "python-debian==0.1.34",
           "chardet",   # from python-debian
           "cmd2",
       ],
