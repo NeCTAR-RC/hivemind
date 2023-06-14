@@ -36,7 +36,7 @@ def version():
 
 def describe():
     with hide("everything"):
-        return local("git describe --tags --match '[0-9]*.[0-9]*'"
+        return local("git describe --tags --match '[0-9]*.[0-9]*' "
                      "--match 'v[0-9]*.[0-9]*'", capture=True)
 
 
