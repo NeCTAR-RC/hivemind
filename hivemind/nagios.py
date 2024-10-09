@@ -1,11 +1,14 @@
+from datetime import datetime
+from datetime import timedelta
 import os
-from time import sleep
 import requests
-from datetime import datetime, timedelta
+from time import sleep
 
-import lxml.etree
 import cssselect
-from fabric.api import env, puts
+from fabric.api import env
+from fabric.api import puts
+import lxml.etree
+
 
 CMD_SCHEDULE_HOST_SVC_DOWNTIME = 86
 

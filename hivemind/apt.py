@@ -1,10 +1,15 @@
-import re
 from itertools import chain
-from fabric.api import shell_env, parallel, puts, env
-from operations import run
-import util
-import nagios
-import puppet
+import re
+
+from fabric.api import env
+from fabric.api import parallel
+from fabric.api import puts
+from fabric.api import shell_env
+
+from hivemind import nagios
+from hivemind.operations import run
+from hivemind import puppet
+from hivemind import util
 
 
 package_upgrade = re.compile(r'   ([^\s]+) \(([^\s]+) => ([^\s]+)\)')

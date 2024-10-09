@@ -1,4 +1,10 @@
 pbr
-mox
-pytest
-mock
+fabric<2.0.0
+prettytable==0.7.2
+requests
+lxml
+docutils
+cssselect
+python-debian==0.1.34
+chardet
+cmd2

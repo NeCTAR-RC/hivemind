@@ -28,9 +28,9 @@ def hide_and_ignore():
 def func_args(function):
     "Dig through the decorator wrappers to find the real function arguments."
     func = function
-    while func.func_closure or hasattr(func, 'wrapped'):
+    while getattr(func, '__closure__', None) or hasattr(func, 'wrapped'):
         if hasattr(func, 'wrapped'):
             func = func.wrapped
             continue
-        func = func.func_closure[0].cell_contents
-    return inspect.getargspec(func)
+        func = func.__closure__[0].cell_contents
+    return inspect.getfullargspec(func)

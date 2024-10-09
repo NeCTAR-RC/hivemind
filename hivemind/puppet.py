@@ -1,5 +1,7 @@
 import json
-from operations import run
+
+from hivemind.operations import run
+
 
 LOCK_FILE = "/opt/puppetlabs/puppet/cache/state/agent_disabled.lock"
 
@@ -39,14 +41,12 @@ def start_service():
 
 
 def run_agent():
-    # TODO (RS) puppet agent will return a 2 error value when anything
     # is changed, if there is an error during a run 6 will be
     # returned, a 1 will be returned if another agent is currently
     # running, and 0 will be returned if nothing has changed
     return run("puppet agent -t", warn_only=True)
 
 
-# TODO does not with puppet 2
 def is_disabled():
     """Check if the puppet agent is disabled.  If it is then return the
     reason.

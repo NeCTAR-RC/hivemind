@@ -1,10 +1,12 @@
-import re
+from collections import deque
 import logging
 import logging.handlers
-from collections import deque
+import re
 
-from fabric.api import env, puts
+from fabric.api import env
+from fabric.api import puts
 from fabric.state import output
+
 
 console = logging.StreamHandler()
 console.setLevel(logging.ERROR)

@@ -1,11 +1,14 @@
 from functools import wraps
-from fabric.api import env, show
-from common import CONF
 import itertools
 import sys
 import threading
 import time
-import util
+
+from fabric.api import env
+from fabric.api import show
+
+from hivemind.common import CONF
+from hivemind import util
 
 
 def _has_role(host, roles):
