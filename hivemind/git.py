@@ -1,8 +1,12 @@
-from fabric.api import puts, local, abort, hide
+import re
+
+from fabric.api import abort
+from fabric.api import hide
+from fabric.api import local
+from fabric.api import puts
 from fabric.colors import green
 
-import re
-import util
+from hivemind import util
 
 
 def assert_in_repository():

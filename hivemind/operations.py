@@ -1,6 +1,10 @@
-from fabric.api import run as fabric_run, puts, env
-from fabric.colors import green, red
-import log
+from fabric.api import env
+from fabric.api import puts
+from fabric.api import run as fabric_run
+from fabric.colors import green
+from fabric.colors import red
+
+from hivemind import log
 
 
 def run(command, shell=True, pty=True, combine_stderr=None, quiet=False,

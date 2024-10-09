@@ -1,28 +1,34 @@
-from StringIO import StringIO
-from collections import defaultdict
-from os import path
-import ConfigParser
 import argparse
+from collections import defaultdict
+import configparser
 import importlib
+import importlib.metadata
+from io import StringIO
 import os
+from os import path
 import pdb
-import pkg_resources
 import pkgutil
 import re
 import sys
 import traceback
 
-from docutils import writers, nodes, io
 from docutils.core import Publisher
+from docutils import io
+from docutils import nodes
+from docutils import writers
+from fabric.api import env
+from fabric.api import execute
+from fabric.api import output
+from fabric.api import puts
+from fabric.api import task as fabric_task
 import fabric.main
 import fabric.state
 import fabric.utils
-from fabric.api import env, puts, output, execute
-from fabric.api import task as fabric_task
 
-import util
+from hivemind import util
 
-CONF = ConfigParser.ConfigParser()
+
+CONF = configparser.ConfigParser()
 
 
 class DocStringTranslator(nodes.GenericNodeVisitor):
@@ -78,14 +84,14 @@ def parse_docstring(doc):
 def _load_fabfile(path=None, importer=None):
     all_tasks = defaultdict(dict)
 
-    for entrypoint in pkg_resources.iter_entry_points(
+    for entrypoint in importlib.metadata.entry_points(
             group='hivemind.packages'):
         plugin = entrypoint.load()
         tasks = _load_package_tasks(plugin, entrypoint.name)
         for k, v in tasks.items():
             all_tasks[k].update(v)
 
-    for entrypoint in pkg_resources.iter_entry_points(
+    for entrypoint in importlib.metadata.entry_points(
             group='hivemind.modules'):
         plugin = entrypoint.load()
         tasks = _load_package_or_module_tasks(plugin, entrypoint.name)
@@ -103,12 +109,13 @@ def _load_package_tasks(package, universe):
     all_tasks = defaultdict(dict)
     package_iter = pkgutil.walk_packages(
         path=package.__path__,
-        prefix=package.__name__+'.',
+        prefix=package.__name__ + '.',
         onerror=lambda x: None)
     for importer, modname, ispkg in package_iter:
         if re.search(r'.*\.tests.*', modname):
             continue
-        module = importer.find_module(modname)
+        spec = importlib.util.find_spec(modname)
+        module = importlib.util.module_from_spec(spec) if spec else None
         if module:
             importlib.import_module(modname)
     tasks = _load_package_or_module_tasks(package, universe)
@@ -259,8 +266,9 @@ def set_defaults():
 
 
 def argname_to_option_flags(name):
-    """Return an argument tuple that contains both the long and short form
-    of the argument e.g. ('--long', '-l')
+    """Return an argument tuple
+
+    contains both the long and short form of the argument e.g. ('--long', '-l')
 
     """
     long_name = "--" + name.replace('_', '-').lower()
@@ -289,8 +297,8 @@ def register_subcommand(subparsers, name, function):
 
     # Pad out the default list with None
     defaults = ((
-        Nothing(),) * (len(args.args) - len(args.defaults or tuple())) +
-                (args.defaults or tuple()))
+        Nothing(),) * (len(args.args) - len(args.defaults or tuple()))
+                + (args.defaults or tuple()))
 
     used_short_args = set(['-h'])
 
@@ -346,7 +354,7 @@ def register_subcommand(subparsers, name, function):
                 action = 'append'
                 # When loading default value, if it's as string
                 # convert it to a list.
-                if isinstance(kwargs['default'], (str, unicode)):
+                if isinstance(kwargs['default'], str):
                     kwargs['default'] = kwargs['default'].split(',')
 
             subcommand.add_argument(
@@ -373,6 +381,7 @@ def register_subcommand(subparsers, name, function):
 
 def load_rc(program_name):
     """Load the users configuration file.
+
     Files are expected to exist in ~/.hivemind/(progname)/
 
     There are 2 files that are loaded.
@@ -389,7 +398,6 @@ def load_rc(program_name):
     if path.exists(conf_filename):
         load_config(conf_filename)
     else:
-        # TODO make template based on existing tasks
         open(conf_filename, 'a').close()
 
     py_filename = path.join(filename, "config.py")
@@ -397,16 +405,15 @@ def load_rc(program_name):
         sys.path.append(hivemind_config_dir)
         try:
             config = importlib.import_module(
-                '%s.%s' % (program_name, 'config'))
+                f'{program_name}.config')
         except ImportError:
-            execfile(py_filename, globals())
+            exec(open(py_filename).read(), globals())
         try:
             config.configure(name=program_name)
         except Exception:
             pass
         sys.path.remove(hivemind_config_dir)
     else:
-        # TODO make template
         open(py_filename, 'a').close()
 
 
@@ -445,8 +452,7 @@ def flatten_dict_keys(dictionary, prefix=""):
     if isinstance(dictionary, dict):
         for key, subdict in dictionary.items():
             name = '.'.join([prefix, key]) if prefix else key
-            for item in flatten_dict_keys(subdict, prefix=name):
-                yield item
+            yield from flatten_dict_keys(subdict, prefix=name)
     else:
         yield prefix
 
@@ -467,11 +473,11 @@ def load_subcommands(commands, parser, prefix=""):
                 functions = functions[cmd_segment]
             except Exception:
                 if alias:
-                    print >> sys.stderr, "FAILED to find command for alias %s"\
-                        % command
+                    print("FAILED to find command for alias %s" % command,
+                          file=sys.stderr)
                 else:
-                    print >> sys.stderr, "FAILED unknown command %s in ini"\
-                        % command
+                    print("FAILED unknown command %s in ini" % command,
+                          file=sys.stderr)
                 functions = None
                 break
         if functions:
@@ -519,7 +525,7 @@ class HelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 def state_init():
     parser = argparse.ArgumentParser(formatter_class=HelpFormatter,
                                      conflict_handler='resolve')
-    parser.add_argument('-v', '--verbose', action='count')
+    parser.add_argument('-v', '--verbose', action='count', default=0)
     subparsers = parser.add_subparsers()
     env_options(parser)
 
@@ -576,8 +582,7 @@ def execute_args(parser, argv=None):
 
 def list_commands():
     for key, value in fabric.state.commands.items():
-        for cmd in value.keys():
-            yield '%s.%s' % (key, cmd)
+        yield from (f'{key}.{cmd}' for cmd in value.keys())
 
 
 def list_arguments(cmd):
