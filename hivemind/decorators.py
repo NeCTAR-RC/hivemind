@@ -25,12 +25,15 @@ def only_for(*role_list):
     host doesn't have one of the listed roles.
 
     """
+
     def _only_for(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             if _has_role(env.host_string, role_list):
                 return func(*args, **kwargs)
+
         return wrapper
+
     return _only_for
 
 
@@ -39,15 +42,17 @@ def verbose(func):
     default.
 
     """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         with show('stdout', 'stderr'):
             return func(*args, **kwargs)
+
     return wrapper
 
 
 def conf_section(module, name):
-    return 'cfg:%s.%s' % (module, name)
+    return f'cfg:{module}.{name}'
 
 
 def func_config(section):
@@ -64,6 +69,7 @@ def configurable(name):
        :param str name: The name given to the config section
 
     """
+
     def _configurable(func):
         # If there is a . assume that the name is fully qualified.
         if '.' in name:
@@ -75,28 +81,37 @@ def configurable(name):
 
         @wraps(func)
         def wrapper(*args, **kwargs):
-            filtered_defaults = dict((a, conf.get(a))
-                                     for a in args_list.args if a in conf)
-            arguments = dict(zip(reversed(args_list.args),
-                                 reversed(args_list.defaults or [])))
+            filtered_defaults = dict(
+                (a, conf.get(a)) for a in args_list.args if a in conf
+            )
+            arguments = dict(
+                zip(
+                    reversed(args_list.args),
+                    reversed(args_list.defaults or []),
+                )
+            )
             arguments.update(kwargs)
             arguments.update(filtered_defaults)
-            arguments.update(dict((k, v) for k, v in
-                             zip(args_list.args, args) if v))
-            missing_args = [arg for arg in args_list.args
-                            if arg not in arguments]
+            arguments.update(
+                dict((k, v) for k, v in zip(args_list.args, args) if v)
+            )
+            missing_args = [
+                arg for arg in args_list.args if arg not in arguments
+            ]
             if missing_args:
                 raise Exception(
-                    'Configuration section %s is missing values for %s' %
-                    (conf_name, missing_args))
+                    f'Configuration section {conf_name} is missing values for {missing_args}'
+                )
 
             return func(**arguments)
+
         return wrapper
+
     return _configurable
 
 
 # Spinner class as decorator to indicate the script is still running
-class Spinner(object):
+class Spinner:
     spinner_cycle = itertools.cycle(['-', '/', '|', '\\'])
 
     def __init__(self, func):

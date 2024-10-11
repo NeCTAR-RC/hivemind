@@ -8,7 +8,8 @@ eResearch compute cloud.  It can be used to do fancy things like:
 * Build debian packages
 
 
-Hivemind runs in python and a complete Hivemind install comprises two interdependent components;
+Hivemind runs in python and a complete Hivemind install comprises two
+interdependent components:
 1) the hivemind framework itself
 2) the hivemind_contrib
 
@@ -16,6 +17,7 @@ These two parts must be installed in the same python virtual environment
 
 Install
 -------
+Hivemind is supported on python 3.10+
 
 You need the following packages ::
 

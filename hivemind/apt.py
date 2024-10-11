@@ -31,8 +31,7 @@ def autoremove():
 
 @parallel(pool_size=10)
 def upgrade(packages=[]):
-    outage = "Package Upgrade (%s@%s)." % (util.local_user(),
-                                           util.local_host())
+    outage = f"Package Upgrade ({util.local_user()}@{util.local_host()})."
     if isinstance(packages, dict):
         packages = packages[env.host_string]
     if not packages:
@@ -44,8 +43,11 @@ def upgrade(packages=[]):
 
     # Do upgrade
     with shell_env(DEBIAN_FRONTEND='noninteractive'):
-        run("apt-get install -y -o Dpkg::Options::='--force-confold' %s" %
-            " ".join(packages))
+        run(
+            "apt-get install -y -o Dpkg::Options::='--force-confold' {}".format(
+                " ".join(packages)
+            )
+        )
 
     # Enable services
     if puppet.is_disabled() == outage:
@@ -60,8 +62,11 @@ def run_upgrade(packages, force_default_config=True):
         options = '--force-confdef'
 
     with shell_env(DEBIAN_FRONTEND='noninteractive'):
-        run("apt-get install -y -o Dpkg::Options::='%s' %s" %
-            (options, " ".join(packages)))
+        run(
+            "apt-get install -y -o Dpkg::Options::='{}' {}".format(
+                options, " ".join(packages)
+            )
+        )
 
 
 @parallel(pool_size=20)
@@ -72,8 +77,9 @@ def update_packages():
 
 @parallel(pool_size=20)
 def verify():
-    result = run("apt-get dist-upgrade --assume-no -V", warn_only=True,
-                 quiet=True)
+    result = run(
+        "apt-get dist-upgrade --assume-no -V", warn_only=True, quiet=True
+    )
     versions = {}
     install_versions = False
     upgrade_versions = False
@@ -104,8 +110,9 @@ def filter_packages(host_packages, exclude=[]):
 
 
 def print_changes(host_packages):
-    packages = list(set(chain(*[packages.keys()
-                                for packages in host_packages.values()])))
+    packages = list(
+        set(chain(*[packages.keys() for packages in host_packages.values()]))
+    )
     packages.sort()
     puts("\nThe following packages will be upgraded")
     for package in packages:
@@ -113,16 +120,18 @@ def print_changes(host_packages):
         package_versions = [pv for pv in package_versions if pv is not None]
         from_versions = set([f for f, t in package_versions])
         to_versions = set([t for f, t in package_versions])
-        puts("%s (%s) => (%s)" % (package,
-                                  ", ".join(from_versions),
-                                  ", ".join(to_versions)))
+        puts(
+            "{} ({}) => ({})".format(
+                package, ", ".join(from_versions), ", ".join(to_versions)
+            )
+        )
     puts("\n")
 
 
 def print_changes_perhost(host_packages):
     for host, packages in host_packages.items():
-        puts("\n[%s] The following packages will be upgraded:" % host)
+        puts(f"\n[{host}] The following packages will be upgraded:")
         for package, versions in sorted(packages.items()):
             from_versions, to_versions = versions
-            puts("%s (%s) => (%s)" % (package, from_versions, to_versions))
+            puts(f"{package} ({from_versions}) => ({to_versions})")
     puts("\n\n")
