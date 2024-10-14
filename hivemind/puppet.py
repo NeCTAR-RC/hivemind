@@ -7,21 +7,22 @@ LOCK_FILE = "/opt/puppetlabs/puppet/cache/state/agent_disabled.lock"
 
 
 def disable_agent(reason):
-    return run("puppet agent --disable '%s'" % reason)
+    return run(f"puppet agent --disable '{reason}'")
 
 
 def enable_agent():
     return run("puppet agent --enable")
 
 
-class disabled():
+class disabled:
     """Disable a puppet agent for the duration of the with context:
 
     >>> from hivemind import puppet
     >>> with puppet.disabled('Software Upgrade'):
-    ...    # ... Perform upgrade ...
-    ...    pass
+    ...     # ... Perform upgrade ...
+    ...     pass
     """
+
     def __init__(self, reason):
         self.reason = reason
 
@@ -52,7 +53,7 @@ def is_disabled():
     reason.
 
     """
-    output = run("cat %s 2>/dev/null || true" % LOCK_FILE)
+    output = run(f"cat {LOCK_FILE} 2>/dev/null || true")
     if not output:
         return False
     return json.loads(output)["disabled_message"]

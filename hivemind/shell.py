@@ -7,17 +7,20 @@ import sys
 from hivemind import common
 
 
-class Shell(cmd.Cmd, object):
+class Shell(cmd.Cmd):
     abbrev = False
 
     def __init__(self, hivemind, *args, **kwargs):
-        super(Shell, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.hivemind = hivemind
-        self.prompt = '%s> ' % os.path.basename(sys.argv[0])
+        self.prompt = f'{os.path.basename(sys.argv[0])}> '
         for command in hivemind.command_list():
-            setattr(self.__class__, 'do_%s' % command, self._make_cmd(command))
-            setattr(self.__class__, 'complete_%s' % command.split('.')[0],
-                    self._make_complete())
+            setattr(self.__class__, f'do_{command}', self._make_cmd(command))
+            setattr(
+                self.__class__,
+                'complete_{}'.format(command.split('.')[0]),
+                self._make_complete(),
+            )
 
     @staticmethod
     def _make_cmd(name):
@@ -25,6 +28,7 @@ class Shell(cmd.Cmd, object):
             args = shlex.split(line)
             success = self.hivemind.execute([name] + args)
             return not success
+
         return handler
 
     @staticmethod
@@ -35,9 +39,11 @@ class Shell(cmd.Cmd, object):
 
             def filter_args(arg):
                 return arg.startswith(text) and arg not in line
+
             comps = filter(filter_args, args)
-            prefix = 2 - line[begidx - 2:begidx].count('-')
+            prefix = 2 - line[begidx - 2 : begidx].count('-')
             return map(lambda c: '-' * prefix + c + ' ', comps)
+
         return handler
 
     def cmdloop(self):
@@ -65,7 +71,7 @@ class Shell(cmd.Cmd, object):
         pass
 
 
-class HivemindState(object):
+class HivemindState:
     def __init__(self, state):
         self.state = state
 

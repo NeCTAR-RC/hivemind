@@ -21,7 +21,7 @@ logging.root.setLevel(logging.INFO)
 ansi_escape = re.compile(r'\x1b[^m]*m')
 
 
-class StreamLogger(object):
+class StreamLogger:
     def __init__(self, stream="stdout"):
         self.logger = logging.getLogger(env.host_string)
         self.linebuf = ''
@@ -37,7 +37,7 @@ class StreamLogger(object):
         """
         for line in buf.rstrip().splitlines():
             if getattr(output, self.stream, None):
-                puts("[%s] %s" % (env.host_string, line))
+                puts(f"[{env.host_string}] {line}")
             self.recent_lines.append(line)
             line = line.rstrip()
             line = ansi_escape.sub('', line)
@@ -56,7 +56,7 @@ class StreamLogger(object):
 
     def print_recent(self):
         for line in self.recent_lines:
-            puts("[%s] %s" % (env.host_string, line))
+            puts(f"[{env.host_string}] {line}")
 
 
 def stdio():

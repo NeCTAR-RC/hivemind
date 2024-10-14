@@ -6,7 +6,7 @@ import importlib.metadata
 from io import StringIO
 import os
 from os import path
-import pdb
+import pdb  # noqa
 import pkgutil
 import re
 import sys
@@ -59,8 +59,10 @@ class DocStringTranslator(nodes.GenericNodeVisitor):
         self.current_field = node.astext().split(" ")
 
     def visit_field_body(self, node):
-        self.fields[self.current_field[2]] = (self.current_field[1],
-                                              node.astext())
+        self.fields[self.current_field[2]] = (
+            self.current_field[1],
+            node.astext(),
+        )
 
 
 class Writer(writers.Writer):
@@ -85,14 +87,16 @@ def _load_fabfile(path=None, importer=None):
     all_tasks = defaultdict(dict)
 
     for entrypoint in importlib.metadata.entry_points(
-            group='hivemind.packages'):
+        group='hivemind.packages'
+    ):
         plugin = entrypoint.load()
         tasks = _load_package_tasks(plugin, entrypoint.name)
         for k, v in tasks.items():
             all_tasks[k].update(v)
 
     for entrypoint in importlib.metadata.entry_points(
-            group='hivemind.modules'):
+        group='hivemind.modules'
+    ):
         plugin = entrypoint.load()
         tasks = _load_package_or_module_tasks(plugin, entrypoint.name)
         for k, v in tasks.items():
@@ -110,7 +114,8 @@ def _load_package_tasks(package, universe):
     package_iter = pkgutil.walk_packages(
         path=package.__path__,
         prefix=package.__name__ + '.',
-        onerror=lambda x: None)
+        onerror=lambda x: None,
+    )
     for importer, modname, ispkg in package_iter:
         if re.search(r'.*\.tests.*', modname):
             continue
@@ -166,6 +171,7 @@ def task(namespace=None, *args, **kwargs):
                 wrapper._hivemind = {}
             wrapper._hivemind['namespace'] = namespace
         return wrapper
+
     return decorator
 
 
@@ -192,50 +198,55 @@ def env_options(parser):
     """Generate environment dict argument parser."""
 
     parser.add_argument(
-        '-R', '--roles',
+        '-R',
+        '--roles',
         default=os.environ.get('ROLES', []),
         action='append',
         metavar='ROLE',
-        help='a role to operate on.'
+        help='a role to operate on.',
     )
 
     parser.add_argument(
-        '-H', '--hosts',
+        '-H',
+        '--hosts',
         default=os.environ.get('HOSTS', []),
         action='append',
         metavar='HOST',
-        help="host to operate on."
+        help="host to operate on.",
     )
 
     parser.add_argument(
-        '-X', '--exclude-hosts',
+        '-X',
+        '--exclude-hosts',
         default=os.environ.get('EXCLUDED_HOSTS', []),
         action='append',
         metavar='HOST',
-        help="host to exclude."
+        help="host to exclude.",
     )
 
     parser.add_argument(
-        '-I', '--instance-uuid',
+        '-I',
+        '--instance-uuid',
         default=os.environ.get('INSTANCE_UUID', None),
         action='store',
         metavar='INSTANCE',
-        help="UUID of instance to operate on."
+        help="UUID of instance to operate on.",
     )
 
     parser.add_argument(
-        '-T', '--tenant-uuid',
+        '-T',
+        '--tenant-uuid',
         default=os.environ.get('TENANT_UUID', None),
         action='store',
         metavar='TENANT',
-        help="UUID of tenant to operate on."
+        help="UUID of tenant to operate on.",
     )
 
     parser.add_argument(
         '--pdb',
         default=False,
         action='store_true',
-        help="Drop to pdb on error."
+        help="Drop to pdb on error.",
     )
 
 
@@ -284,9 +295,7 @@ def register_subcommand(subparsers, name, function):
     doc, fields_doc = parse_docstring(function.__doc__ or "")
     doc.seek(0)
     doc = conf.get('@doc', doc.read())
-    subcommand = subparsers.add_parser(name,
-                                       help=doc,
-                                       description=doc)
+    subcommand = subparsers.add_parser(name, help=doc, description=doc)
     args = util.func_args(function)
 
     # Add the arguments and the function for extraction later.
@@ -296,9 +305,9 @@ def register_subcommand(subparsers, name, function):
         pass
 
     # Pad out the default list with None
-    defaults = ((
-        Nothing(),) * (len(args.args) - len(args.defaults or tuple()))
-                + (args.defaults or tuple()))
+    defaults = (Nothing(),) * (
+        len(args.args) - len(args.defaults or tuple())
+    ) + (args.defaults or tuple())
 
     used_short_args = set(['-h'])
 
@@ -335,13 +344,17 @@ def register_subcommand(subparsers, name, function):
             subcommand.add_argument(
                 *args_to_options(narg, negative=True),
                 help=field_doc,
-                action='store_false', **kwargs)
+                action='store_false',
+                **kwargs,
+            )
         elif default is False:
             arg_mapping.append((arg, arg))
             subcommand.add_argument(
                 *args_to_options(arg),
                 help=field_doc + " (default: %(default)s)",
-                action='store_true', **kwargs)
+                action='store_true',
+                **kwargs,
+            )
         elif isinstance(default, list):
             arg_mapping.append((arg, arg))
             # If choices then use the first value from the list as the
@@ -358,21 +371,24 @@ def register_subcommand(subparsers, name, function):
                     kwargs['default'] = kwargs['default'].split(',')
 
             subcommand.add_argument(
-                *args_to_options(arg), action=action,
+                *args_to_options(arg),
+                action=action,
                 help=field_doc + " (default: %(default)s)",
-                **kwargs)
+                **kwargs,
+            )
         else:
             arg_mapping.append((arg, arg))
             if 'default' in kwargs:
                 subcommand.add_argument(
-                    *args_to_options(arg), action='store',
+                    *args_to_options(arg),
+                    action='store',
                     help=field_doc + " (default: %(default)s)",
-                    **kwargs)
+                    **kwargs,
+                )
             else:
                 subcommand.add_argument(
-                    arg, action='store',
-                    help=field_doc,
-                    **kwargs)
+                    arg, action='store', help=field_doc, **kwargs
+                )
 
     subcommand.set_defaults(hivemind_arg_mapping=arg_mapping)
 
@@ -404,8 +420,7 @@ def load_rc(program_name):
     if path.exists(py_filename):
         sys.path.append(hivemind_config_dir)
         try:
-            config = importlib.import_module(
-                f'{program_name}.config')
+            config = importlib.import_module(f'{program_name}.config')
         except ImportError:
             exec(open(py_filename).read(), globals())
         try:
@@ -432,8 +447,11 @@ def filter_commands(commands):
     exclusions = conf.get('exclude_namespaces', '')
 
     if namespaces:
-        commands = {namespace: command for namespace, command in
-                    commands.items() if namespace in namespaces}
+        commands = {
+            namespace: command
+            for namespace, command in commands.items()
+            if namespace in namespaces
+        }
     for exclusion in exclusions.split(','):
         if exclusion:
             del commands[exclusion]
@@ -441,7 +459,7 @@ def filter_commands(commands):
 
 
 def command_config(command_name):
-    conf_section = 'cmd:%s' % command_name
+    conf_section = f'cmd:{command_name}'
     try:
         return dict(CONF.items(conf_section))
     except Exception:
@@ -473,11 +491,15 @@ def load_subcommands(commands, parser, prefix=""):
                 functions = functions[cmd_segment]
             except Exception:
                 if alias:
-                    print("FAILED to find command for alias %s" % command,
-                          file=sys.stderr)
+                    print(
+                        f"FAILED to find command for alias {command}",
+                        file=sys.stderr,
+                    )
                 else:
-                    print("FAILED unknown command %s in ini" % command,
-                          file=sys.stderr)
+                    print(
+                        f"FAILED unknown command {command} in ini",
+                        file=sys.stderr,
+                    )
                 functions = None
                 break
         if functions:
@@ -499,19 +521,20 @@ class HelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
             if isinstance(result, tuple):
                 return result
             else:
-                return (result, ) * tuple_size
+                return (result,) * tuple_size
+
         return format
 
     def _format_args(self, action, default_metavar):
         get_metavar = self._metavar_formatter(action, default_metavar)
         if action.nargs is None:
-            result = '%s' % get_metavar(1)
+            result = f'{get_metavar(1)}'
         elif action.nargs == argparse.OPTIONAL:
-            result = '[%s]' % get_metavar(1)
+            result = f'[{get_metavar(1)}]'
         elif action.nargs == argparse.ZERO_OR_MORE:
-            result = '[%s [%s ...]]' % get_metavar(2)
+            result = '[{} [{} ...]]'.format(*get_metavar(2))
         elif action.nargs == argparse.ONE_OR_MORE:
-            result = '%s [%s ...]' % get_metavar(2)
+            result = '{} [{} ...]'.format(*get_metavar(2))
         elif action.nargs == argparse.REMAINDER:
             result = '...'
         elif action.nargs == argparse.PARSER:
@@ -523,8 +546,9 @@ class HelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
 
 def state_init():
-    parser = argparse.ArgumentParser(formatter_class=HelpFormatter,
-                                     conflict_handler='resolve')
+    parser = argparse.ArgumentParser(
+        formatter_class=HelpFormatter, conflict_handler='resolve'
+    )
     parser.add_argument('-v', '--verbose', action='count', default=0)
     subparsers = parser.add_subparsers()
     env_options(parser)
@@ -544,8 +568,9 @@ def state_init():
     fabric.state.commands.update(callables)
 
     # Register subcommands
-    commands = set(s.split(':', 1)[1] for s in CONF.sections()
-                   if s.startswith('cmd'))
+    commands = set(
+        s.split(':', 1)[1] for s in CONF.sections() if s.startswith('cmd')
+    )
     commands = commands.union(set(flatten_dict_keys(fabric.state.commands)))
 
     load_subcommands(sorted(list(commands)), subparsers)
@@ -573,9 +598,9 @@ def execute_args(parser, argv=None):
     if hasattr(args, 'hivemind_func'):
         kwargs = dict(
             (func_arg, getattr(args, argparser_arg))
-            for (argparser_arg, func_arg) in args.hivemind_arg_mapping)
-        execute(args.hivemind_func,
-                **kwargs)
+            for (argparser_arg, func_arg) in args.hivemind_arg_mapping
+        )
+        execute(args.hivemind_func, **kwargs)
         return True
     return False
 
@@ -594,6 +619,7 @@ def list_arguments(cmd):
 
 def main_plus():
     from hivemind import shell
+
     try:
         parser = state_init()
         shell.shell(parser)

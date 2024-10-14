@@ -4,7 +4,6 @@ from hivemind import common
 
 
 class CommonTestCase(unittest.TestCase):
-
     def test_list_commands(self):
         common.list_commands()
 
