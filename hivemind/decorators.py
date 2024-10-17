@@ -129,7 +129,7 @@ class Spinner:
 
     def init_spin(self):
         while not self.stop_running.is_set():
-            sys.stdout.write('\b' + self.spinner_cycle.next())
+            sys.stdout.write('\b' + next(self.spinner_cycle))
             sys.stdout.flush()
             time.sleep(0.25)
 
