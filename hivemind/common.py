@@ -187,7 +187,7 @@ def main(filename=__file__):
         if env.roledefs:
             puts("Available roles:\n")
             for role, host_list in env.roledefs.items():
-                puts("    %-15s %s" % (role, ",".join(host_list)))
+                puts(f"    {role:<15} {','.join(host_list)}")
         sys.argv = sys.argv + ["-l"]
 
     fabric.main.load_fabfile = _load_fabfile
